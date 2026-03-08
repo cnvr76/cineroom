@@ -1,0 +1,30 @@
+import type { Vector3Tuple, Vector4Tuple } from "three";
+import type { ReactNode } from "react";
+
+export type CameraConfig = {
+  position: Vector3Tuple;
+  target: Vector3Tuple;
+  quaternion?: Vector4Tuple;
+  animationSpeed: number;
+  changeSpeed: number;
+};
+
+export type RoomConfig = {
+  defaultPosition: CameraConfig;
+};
+
+export type UIConfig = {
+  position: Vector3Tuple;
+  rotation: Vector3Tuple;
+  width: number;
+  height: number;
+  content: ReactNode;
+};
+
+export type InteractableObject = {
+  objectName: string;
+  camera: CameraConfig;
+  ui: UIConfig;
+};
+
+export type InteractableObjectsMap = Record<string, InteractableObject>;
