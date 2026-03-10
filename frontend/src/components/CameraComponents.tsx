@@ -1,5 +1,5 @@
 import { useRef, useLayoutEffect } from "react";
-import { useThree, useFrame } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { OrbitControls as OrbitControlsType } from "three-stdlib";
 import type { Vector3Tuple } from "three";
@@ -11,25 +11,18 @@ function CameraSetup() {
 
   const logPosition = () => {
     if (controlsRef.current) {
-      const pos = camera.position;
-      const target = controlsRef.current.target;
-      const quaternion = camera.quaternion;
-
-      console.log(
-        `position: [${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(
-          2,
-        )}]`,
+      const pos: number[] = Object.values(camera.position).map((num) =>
+        num.toFixed(2),
       );
-      console.log(
-        `target: [${target.x.toFixed(2)}, ${target.y.toFixed(
-          2,
-        )}, ${target.z.toFixed(2)}]`,
+      const target: number[] = Object.values(controlsRef.current.target).map(
+        (num) => num.toFixed(2),
       );
-      console.log(
-        `quaternion: [${quaternion.x.toFixed(2)}, ${quaternion.y.toFixed(
-          2,
-        )}, ${quaternion.z.toFixed(2)}, ${quaternion.w.toFixed(2)}]`,
-      );
+      const quaternion: string[] = camera.quaternion
+        .toArray()
+        .map((num) => num.toFixed(2));
+      console.log(`position: [${pos.join(", ")}]`);
+      console.log(`target: [${target.join(", ")}]`);
+      console.log(`quaternion: [${quaternion.join(", ")}]`);
       console.log("---");
     }
   };
@@ -52,10 +45,6 @@ function CameraFixed({ position, target }: CameraFixedProps) {
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld(true);
   }, []);
-
-  useFrame(() => {
-    camera.updateMatrixWorld(true);
-  });
 
   return null;
 }

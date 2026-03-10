@@ -7,6 +7,7 @@ const ModalWindow = ({ children, placement }: HtmlConfig) => {
         width: `${placement.width}px`,
         height: `${placement.height}px`,
         background: "red",
+        position: "absolute",
       }}
     >
       {children}

@@ -1,8 +1,6 @@
 import type { RoomConfig } from "../../config/config.types";
-import type { INTERACTABLE_OBJECTS } from "../../config/sceneObjects";
 import * as THREE from "three";
-
-export type SceneObjectKey = keyof typeof INTERACTABLE_OBJECTS;
+import type { SceneObjectKey } from "../../config/sceneObjects";
 
 export type MoveObjectFnParams = (
   objectKey: SceneObjectKey,
