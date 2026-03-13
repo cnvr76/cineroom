@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MoviesModule } from './movies/movies.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { MoviesModule } from './movies/movies.module';
         uri: config.get<string>('MONGO_URL'),
       }),
     }),
-    MoviesModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

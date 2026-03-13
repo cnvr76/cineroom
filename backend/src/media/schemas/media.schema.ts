@@ -27,14 +27,14 @@ export class Movie extends Document {
   @Prop({ default: 0 })
   rating: number;
 
+  @Prop({ required: true })
+  popularity: number;
+
   @Prop({ type: Date })
   releaseDate: Date;
 
   @Prop({ default: '#000000' })
   dominantColor: string;
-
-  @Prop({ index: true })
-  page: number;
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);
