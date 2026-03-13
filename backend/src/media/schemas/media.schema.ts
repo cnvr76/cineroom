@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
-export class Movie extends Document {
+export class Media extends Document {
   @Prop({ required: true, unique: true, index: true })
   tmdbId: number;
 
@@ -37,4 +37,4 @@ export class Movie extends Document {
   dominantColor: string;
 }
 
-export const MovieSchema = SchemaFactory.createForClass(Movie);
+export const MovieSchema = SchemaFactory.createForClass(Media);

@@ -5,21 +5,20 @@ interface ITmdbBase {
   backdrop_path: string;
   overview: string;
   poster_path: string;
-  media_type: MediaType;
   genre_ids: number[];
   popularity: number;
   vote_average: number;
 }
 
 export interface ITmdbMovie extends ITmdbBase {
-  id: number;
+  media_type: 'movie';
   title: string;
   original_title: string;
   release_date: string;
 }
 
 export interface ITmdbTV extends ITmdbBase {
-  id: number;
+  media_type: 'tv';
   name: string;
   original_name: string;
   first_air_date: string;
