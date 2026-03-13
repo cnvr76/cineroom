@@ -1,23 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Media } from './schemas/media.schema';
 import { Model, QueryFilter } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
 import type {
   ITmdbMovie,
-  ITmdbResponse,
   ITmdbTV,
+  ITmmdbVideo,
   MediaType,
   TmdbResult,
 } from './media.types';
+import { FetchService } from 'src/fetch/fetch.service';
 
 @Injectable()
 export class MediaService {
   constructor(
-    private readonly httpService: HttpService,
     @InjectModel(Media.name) private movieModel: Model<Media>,
+    private readonly fetchService: FetchService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -42,8 +41,30 @@ export class MediaService {
     let media = await fetchdb();
 
     if (media.length < batch - forgiveMissing) {
-      const newMedia = await this.getNewData(page, mediaType);
+      await this.getNewData(page, mediaType);
       media = await fetchdb();
+    }
+
+    return media;
+  }
+
+  async getDetails(id: string, mediaType: MediaType) {
+    const media = await this.movieModel.findById(id).lean();
+    if (!media) return {};
+    if (media.trailerKey) return media;
+
+    const details = await this.fetchService.fetchDetails(
+      media.tmdbId,
+      mediaType,
+    );
+    const videoList: ITmmdbVideo[] = details?.videos?.results || [];
+    const trailerKey: string | undefined = videoList.find(
+      (item) => item.type === 'Trailer',
+    )?.key;
+
+    if (trailerKey) {
+      await this.movieModel.updateOne({ _id: id }, { $set: { trailerKey } });
+      media.trailerKey = trailerKey;
     }
 
     return media;
@@ -52,26 +73,26 @@ export class MediaService {
   private async getNewData(page: number, mediaType: MediaType | 'all' = 'all') {
     if (mediaType === 'all') {
       const [movies, tvs] = await Promise.all([
-        this.fetchMedia(page, 'movie'),
-        this.fetchMedia(page, 'tv'),
+        this.fetchService.fetchMedia(page, 'movie'),
+        this.fetchService.fetchMedia(page, 'tv'),
       ]);
       const combined = [...(movies?.results || []), ...(tvs?.results || [])];
-      return await this.save(combined);
+      return await this.saveNewMedia(combined);
     } else {
-      const other = await this.fetchMedia(page, mediaType);
-      return await this.save(other?.results);
+      const other = await this.fetchService.fetchMedia(page, mediaType);
+      return await this.saveNewMedia(other?.results);
     }
   }
 
-  private async save(entries: TmdbResult[] | undefined) {
+  private async saveNewMedia(entries: TmdbResult[] | undefined) {
     if (!entries || entries.length === 0) return;
 
     const [movieGenres, tvGenres] = await Promise.all([
-      await this.fetchGenres('movie'),
-      await this.fetchGenres('tv'),
+      this.fetchService.fetchGenres('tv'),
+      this.fetchService.fetchGenres('movie'),
     ]);
 
-    const preparedPromises = entries.map(async (entry) => {
+    const prepared = entries.map((entry) => {
       const isMovie: boolean = entry.media_type === 'movie';
       const genres = isMovie ? movieGenres : tvGenres;
 
@@ -106,47 +127,11 @@ export class MediaService {
       };
     });
 
-    const prepared = await Promise.all(preparedPromises);
-
     try {
       await this.movieModel.bulkWrite(prepared);
       console.log(`Successfuly added ${prepared.length} new media`);
     } catch (error) {
       console.error('Error writing new media to database:', error.message);
     }
-  }
-
-  private async fetchMedia(page: number, mediaType: MediaType) {
-    const baseUrl = this.configService.get('TRENDING_URL');
-    const key = this.configService.get('TMDB_APIKEY');
-
-    try {
-      const { data }: { data: ITmdbResponse } = await firstValueFrom(
-        this.httpService.get(
-          `${baseUrl}/${mediaType}/day?api_key=${key}&page=${page}&append_to_response=videos,images`,
-        ),
-      );
-      // console.log(data);
-      return data;
-    } catch (error) {
-      console.error('Error while attempting to fetch TMDB:', error.message);
-    }
-  }
-
-  private async fetchGenres(
-    mediaType: MediaType,
-  ): Promise<Record<number, string>> {
-    const baseUrl = this.configService.get('GENRES_URL');
-    const key = this.configService.get('TMDB_APIKEY');
-
-    const { data } = await firstValueFrom(
-      this.httpService.get(`${baseUrl}/${mediaType}/list?api_key=${key}`),
-    );
-
-    // Превращаем массив [{id: 28, name: "Action"}] в объект { 28: "Action" }
-    return data.genres.reduce((acc, genre) => {
-      acc[genre.id] = genre.name;
-      return acc;
-    }, {});
   }
 }

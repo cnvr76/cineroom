@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MediaModule } from './media/media.module';
+import { FetchService } from './fetch/fetch.service';
+import { FetchModule } from './fetch/fetch.module';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { MediaModule } from './media/media.module';
       }),
     }),
     MediaModule,
+    FetchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

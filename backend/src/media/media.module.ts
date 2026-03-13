@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { MediaController } from './media.controller';
-import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Media, MovieSchema } from './schemas/media.schema';
+import { FetchModule } from 'src/fetch/fetch.module';
 
 @Module({
   imports: [
-    HttpModule,
+    FetchModule,
     MongooseModule.forFeature([{ name: Media.name, schema: MovieSchema }]),
   ],
   controllers: [MediaController],
