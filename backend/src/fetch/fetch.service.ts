@@ -8,6 +8,7 @@ import { firstValueFrom } from 'rxjs';
 export class FetchService {
   private readonly APIKEY: string | undefined;
   private readonly BASE_URL: string | undefined;
+  private readonly BASE_POSTER_URL: string | undefined;
 
   constructor(
     private readonly configService: ConfigService,
@@ -15,6 +16,22 @@ export class FetchService {
   ) {
     this.APIKEY = this.configService.get<string>('TMDB_APIKEY');
     this.BASE_URL = this.configService.get<string>('BASE_URL');
+    this.BASE_POSTER_URL = this.configService.get<string>('BASE_POSTER_URL');
+  }
+
+  async fetchPoster(posterPath: string, resolution: string = 'w500') {
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.get(
+          `${this.BASE_POSTER_URL}/${resolution}/${posterPath}`,
+          { responseType: 'arraybuffer' },
+        ),
+      );
+      return Buffer.from(data);
+    } catch (error) {
+      console.error('Error fetching poster:', error.message);
+      return '';
+    }
   }
 
   async fetchDetails(tmdbId: number, mediaType: MediaType) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Media } from './schemas/media.schema';
+import { Media, DEFAULT_HEX } from './schemas/media.schema';
 import { Model, QueryFilter } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import type {
@@ -11,6 +11,7 @@ import type {
   TmdbResult,
 } from './media.types';
 import { FetchService } from 'src/fetch/fetch.service';
+import { Vibrant } from 'node-vibrant/node';
 
 @Injectable()
 export class MediaService {
@@ -51,23 +52,52 @@ export class MediaService {
   async getDetails(id: string, mediaType: MediaType) {
     const media = await this.movieModel.findById(id).lean();
     if (!media) return {};
-    if (media.trailerKey) return media;
 
-    const details = await this.fetchService.fetchDetails(
-      media.tmdbId,
-      mediaType,
-    );
-    const videoList: ITmmdbVideo[] = details?.videos?.results || [];
-    const trailerKey: string | undefined = videoList.find(
-      (item) => item.type === 'Trailer',
-    )?.key;
+    const promises: Promise<void>[] = [];
+    const updates: Record<string, any> = {};
 
-    if (trailerKey) {
-      await this.movieModel.updateOne({ _id: id }, { $set: { trailerKey } });
-      media.trailerKey = trailerKey;
+    if (media.dominantColor === DEFAULT_HEX || !media.dominantColor) {
+      const colorPromise = this.getDominantColor(media.posterPath).then(
+        (color) => {
+          media.dominantColor = color;
+          updates.dominantColor = color;
+        },
+      );
+      promises.push(colorPromise);
+      console.log(`Color fetching added for ${id}`);
+    }
+    if (!media.trailerKey) {
+      const trailerPromise = this.fetchService
+        .fetchDetails(media.tmdbId, mediaType)
+        .then((details) => {
+          const videoList: ITmmdbVideo[] = details?.videos?.results || [];
+          const trailerKey: string | undefined = videoList.find(
+            (item) => item.type === 'Trailer',
+          )?.key;
+
+          if (trailerKey) {
+            updates.trailerKey = trailerKey;
+            media.trailerKey = trailerKey;
+          }
+        });
+      promises.push(trailerPromise);
+      console.log(`Trailer fetching added for ${id}`);
     }
 
+    if (promises.length > 0) await Promise.all(promises);
+
+    if (Object.keys(updates).length > 0)
+      await this.movieModel.findByIdAndUpdate(id, { $set: updates });
+
     return media;
+  }
+
+  private async getDominantColor(posterPath: string) {
+    const palette = await Vibrant.from(
+      await this.fetchService.fetchPoster(posterPath),
+    ).getPalette();
+
+    return palette.Vibrant?.hex || DEFAULT_HEX;
   }
 
   private async getNewData(page: number, mediaType: MediaType | 'all' = 'all') {

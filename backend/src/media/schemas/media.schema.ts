@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+export const DEFAULT_HEX: string = '#000000';
+
 @Schema({ timestamps: true })
 export class Media extends Document {
   @Prop({ required: true, unique: true, index: true })
@@ -33,7 +35,7 @@ export class Media extends Document {
   @Prop({ type: Date })
   releaseDate: Date;
 
-  @Prop({ default: '#000000' })
+  @Prop({ default: DEFAULT_HEX })
   dominantColor: string;
 }
 
