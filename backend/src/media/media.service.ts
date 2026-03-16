@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Media, DEFAULT_HEX } from './schemas/media.schema';
 import { Model, QueryFilter } from 'mongoose';
@@ -12,14 +12,27 @@ import type {
 } from './media.types';
 import { FetchService } from 'src/fetch/fetch.service';
 import { Vibrant } from 'node-vibrant/node';
+import type { UpdateMediaDTO } from './dto/media.dto';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class MediaService {
   constructor(
     @InjectModel(Media.name) private movieModel: Model<Media>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly fetchService: FetchService,
     private readonly configService: ConfigService,
   ) {}
+
+  async updateMedia(mediaId: string, data: Partial<UpdateMediaDTO>) {
+    const media = await this.movieModel.findByIdAndUpdate(
+      mediaId,
+      { $set: data },
+      { new: true },
+    );
+    if (!media) throw new NotFoundException(`Media ${mediaId} not found`);
+    return media;
+  }
 
   async getPaginated(
     mediaType: MediaType | 'all',
