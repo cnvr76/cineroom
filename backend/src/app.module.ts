@@ -6,6 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MediaModule } from './media/media.module';
 import { FetchService } from './fetch/fetch.service';
 import { FetchModule } from './fetch/fetch.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { FetchModule } from './fetch/fetch.module';
     }),
     MediaModule,
     FetchModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
