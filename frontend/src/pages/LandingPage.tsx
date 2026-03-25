@@ -3,6 +3,7 @@ import { Gltf, Stats } from "@react-three/drei";
 import {
   DEFAULT_CAMERA_CONFIG as dcc,
   INTERACTABLE_OBJECTS,
+  MODALS,
 } from "../config/sceneObjects";
 import { CameraFixed, CameraSetup } from "../components/CameraComponents";
 import LightingSystem from "../components/LightingSystem";
@@ -35,7 +36,7 @@ const LandingPage = () => {
         <LightingSystem />
       </Canvas>
 
-      <ModalWindow placement={INTERACTABLE_OBJECTS.tv.ui}>
+      <ModalWindow placement={MODALS.landing}>
         <div className="">TEST</div>
       </ModalWindow>
     </div>

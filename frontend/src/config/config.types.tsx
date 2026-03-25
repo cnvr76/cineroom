@@ -1,5 +1,6 @@
 import type { Vector3Tuple, Vector4Tuple } from "three";
 import type { ReactNode } from "react";
+import type { ModalPlacement } from "../components/types/components.types";
 
 export type CameraConfig = {
   position: Vector3Tuple;
@@ -28,3 +29,4 @@ export type InteractableObject = {
 };
 
 export type InteractableObjectsMap = Record<string, InteractableObject>;
+export type ModalsMap = Record<string, ModalPlacement>;

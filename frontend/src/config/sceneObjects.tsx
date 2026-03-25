@@ -1,10 +1,14 @@
-import type { CameraConfig, InteractableObjectsMap } from "./config.types";
+import type {
+  CameraConfig,
+  InteractableObjectsMap,
+  ModalsMap,
+} from "./config.types";
 
 export type SceneObjectKey = keyof typeof INTERACTABLE_OBJECTS;
 export type SceneModalKey = keyof typeof MODALS;
 
 export const DEFAULT_SELECTED: SceneObjectKey | null = "tv";
-export const DEFAULT_MODAL: SceneModalKey | null = "movies";
+export const DEFAULT_MODAL: SceneModalKey | null = "landing";
 
 export const DEFAULT_CAMERA_CONFIG = {
   position: [-0.53, 1.26, 1.09],
@@ -28,5 +32,12 @@ export const INTERACTABLE_OBJECTS = {
 } satisfies InteractableObjectsMap;
 
 export const MODALS = {
-  movies: {},
-};
+  landing: {
+    width: "50%",
+    height: "100%",
+    inset: "right",
+    gap: 24,
+    rotation: -16,
+    perspective: 1700,
+  },
+} satisfies ModalsMap;
