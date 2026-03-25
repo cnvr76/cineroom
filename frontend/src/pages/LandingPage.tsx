@@ -3,12 +3,11 @@ import { Gltf, Stats } from "@react-three/drei";
 import {
   DEFAULT_CAMERA_CONFIG as dcc,
   INTERACTABLE_OBJECTS,
-  MODALS,
 } from "../config/sceneObjects";
 import { CameraFixed, CameraSetup } from "../components/CameraComponents";
 import LightingSystem from "../components/LightingSystem";
 import { useSceneActions, useSceneState } from "../contexts/SceneContext";
-import ModalWindow from "../components/ModalWindow";
+import LandingModal from "../components/landing/LandingModal";
 
 const DebugPanel = () => {
   const { currentSelected, currentHovered } = useSceneState();
@@ -36,9 +35,7 @@ const LandingPage = () => {
         <LightingSystem />
       </Canvas>
 
-      <ModalWindow placement={MODALS.landing}>
-        <div className="">TEST</div>
-      </ModalWindow>
+      <LandingModal />
     </div>
   );
 };

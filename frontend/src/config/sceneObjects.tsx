@@ -21,13 +21,6 @@ export const INTERACTABLE_OBJECTS = {
   tv: {
     objectName: "Monitor", // Change later after replacing .glb scene
     camera: DEFAULT_CAMERA_CONFIG,
-    ui: {
-      position: [0, 1.27, -0.05],
-      rotation: [0, 0, 0],
-      width: 900,
-      height: 720,
-      content: <div className="">TEST</div>,
-    },
   },
 } satisfies InteractableObjectsMap;
 
@@ -36,8 +29,9 @@ export const MODALS = {
     width: "50%",
     height: "100%",
     inset: "right",
-    gap: 24,
+    gap: 16,
     rotation: -16,
     perspective: 1700,
+    background: "transparent",
   },
 } satisfies ModalsMap;

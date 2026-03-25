@@ -25,7 +25,6 @@ export type UIConfig = {
 export type InteractableObject = {
   objectName: string;
   camera: CameraConfig;
-  ui: UIConfig;
 };
 
 export type InteractableObjectsMap = Record<string, InteractableObject>;
