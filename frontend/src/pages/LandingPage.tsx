@@ -14,7 +14,7 @@ const DebugPanel = () => {
   const { getAllInteractables, isAnyHovered } = useSceneActions();
 
   return (
-    <div className="fixed right-4 top-4 bg-black/80 text-white p-3 rounded-lg text-sm font-mono z-100">
+    <div className="fixed right-4 top-4 bg-black/80 text-white p-3 rounded-lg text-sm font-mono z-30000">
       <div>Interactables: {Object.keys(getAllInteractables()).join(", ")}</div>
       <div>Selected: {currentSelected || "none"}</div>
       <div>Hovered: {currentHovered || "none"}</div>
@@ -31,7 +31,7 @@ const LandingPage = () => {
         {/* <CameraSetup /> */}
         {/* <Stats /> */}
         <CameraFixed position={dcc.position} target={dcc.target} />
-        <Gltf src="/models/main_scene_old_updated_2.glb" />
+        <Gltf src="/models/scene.glb" />
         <LightingSystem />
       </Canvas>
 

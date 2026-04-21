@@ -1,3 +1,4 @@
+import LandingModal from "../components/landing/LandingModal";
 import type {
   CameraConfig,
   InteractableObjectsMap,
@@ -11,22 +12,23 @@ export const DEFAULT_SELECTED: SceneObjectKey | null = "tv";
 export const DEFAULT_MODAL: SceneModalKey | null = "landing";
 
 export const DEFAULT_CAMERA_CONFIG = {
-  position: [-0.53, 1.26, 1.09],
-  target: [0.5, 1.27, 0.01],
+  position: [1.16, 0.89, 0.47],
+  target: [-0.11, 0.36, -0.53],
   animationSpeed: 1,
   changeSpeed: 2,
 } satisfies CameraConfig;
 
 export const INTERACTABLE_OBJECTS = {
   tv: {
-    objectName: "Monitor", // Change later after replacing .glb scene
+    objectName: "TV", // Change later after replacing .glb scene
     camera: DEFAULT_CAMERA_CONFIG,
+    modal: <LandingModal />,
   },
 } satisfies InteractableObjectsMap;
 
 export const MODALS = {
   landing: {
-    width: "50%",
+    width: "40%",
     height: "100%",
     inset: "right",
     gap: 16,

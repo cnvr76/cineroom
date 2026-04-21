@@ -25,6 +25,8 @@ export type UIConfig = {
 export type InteractableObject = {
   objectName: string;
   camera: CameraConfig;
+  modal?: ReactNode;
+  func?: void;
 };
 
 export type InteractableObjectsMap = Record<string, InteractableObject>;
