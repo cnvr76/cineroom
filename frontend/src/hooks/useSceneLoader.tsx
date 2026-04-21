@@ -1,6 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import { useSceneActions } from "../contexts/SceneContext";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { useVideoTexture } from "@react-three/drei";
 import {

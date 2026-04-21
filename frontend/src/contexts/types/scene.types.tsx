@@ -1,7 +1,7 @@
 import type { RoomConfig } from "../../config/config.types";
 import * as THREE from "three";
 import type { SceneObjectKey } from "../../config/sceneObjects";
-// import type { IMediaBrief } from "../../services/types/media.types";
+import type { IMediaBrief } from "../../services/types/media.types";
 
 export type MoveObjectFnParams = (
   objectKey: SceneObjectKey,
@@ -12,8 +12,8 @@ export type MoveObjectFnParams = (
 export interface SceneState {
   currentSelected: SceneObjectKey | undefined;
   currentHovered: SceneObjectKey | undefined;
-  // currentMedia: IMediaBrief | undefined;
-  // currentHoveredMedia: IMediaBrief | undefined;
+  currentMedia: IMediaBrief | undefined;
+  currentHoveredMedia: IMediaBrief | undefined;
 }
 
 export interface SceneActions {
@@ -25,8 +25,14 @@ export interface SceneActions {
   isAnyHovered: () => boolean;
   isAnySelected: () => boolean;
 
-  // isMediaSelected: (id: string) => boolean;
-  // isMediaHovered: (id: string) => boolean;
+  isMediaSelected: (id: string) => boolean;
+  isMediaHovered: (id: string) => boolean;
+  selectMedia: (id: string) => void;
+  deselectMedia: () => void;
+  getMedia: (id: string) => IMediaBrief | undefined;
+  registerMedia: (data: IMediaBrief) => void;
+  unregisterAllMedia: () => void;
+  setHoveredMedia: (id: string) => void;
 
   registerInteractable: (key: string, object: THREE.Object3D) => void;
   registerSpotlight: (key: string, spotlight: THREE.SpotLight) => void;

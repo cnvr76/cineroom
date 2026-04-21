@@ -1,9 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { Gltf, Stats } from "@react-three/drei";
-import {
-  DEFAULT_CAMERA_CONFIG as dcc,
-  INTERACTABLE_OBJECTS,
-} from "../config/sceneObjects";
+import { DEFAULT_CAMERA_CONFIG as dcc } from "../config/sceneObjects";
 import { CameraFixed, CameraSetup } from "../components/CameraComponents";
 import LightingSystem from "../components/LightingSystem";
 import { useSceneActions, useSceneState } from "../contexts/SceneContext";
