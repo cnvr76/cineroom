@@ -8,10 +8,12 @@ import { CameraFixed, CameraSetup } from "../components/CameraComponents";
 import LightingSystem from "../components/LightingSystem";
 import { useSceneActions, useSceneState } from "../contexts/SceneContext";
 import LandingModal from "../components/landing/LandingModal";
+import SpotlightSystem from "../components/SpotlightSystem";
 
 const DebugPanel = () => {
   const { currentSelected, currentHovered } = useSceneState();
-  const { getAllInteractables, isAnyHovered } = useSceneActions();
+  const { getAllInteractables, isAnyHovered, isAnySelected } =
+    useSceneActions();
 
   return (
     <div className="fixed right-4 top-4 bg-black/80 text-white p-3 rounded-lg text-sm font-mono z-30000">
@@ -19,6 +21,7 @@ const DebugPanel = () => {
       <div>Selected: {currentSelected || "none"}</div>
       <div>Hovered: {currentHovered || "none"}</div>
       <div>Has hover: {isAnyHovered() ? "yes" : "no"}</div>
+      <div>Has selection: {isAnySelected() ? "yes" : "no"}</div>
     </div>
   );
 };
@@ -33,6 +36,7 @@ const LandingPage = () => {
         <CameraFixed position={dcc.position} target={dcc.target} />
         <Gltf src="/models/scene.glb" />
         <LightingSystem />
+        <SpotlightSystem />
       </Canvas>
 
       <LandingModal />

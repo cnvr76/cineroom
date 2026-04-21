@@ -1,4 +1,3 @@
-import React from "react";
 import ModalWindow from "../ModalWindow";
 import { MODALS } from "../../config/sceneObjects";
 import { mediaSeed } from "../../documents/dummy";

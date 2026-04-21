@@ -1,17 +1,21 @@
 import { useRef, useState, type ReactNode } from "react";
-import type { MoveObjectFnParams, SceneObjectKey } from "./types/scene.types";
+import type { MoveObjectFnParams } from "./types/scene.types";
 import * as THREE from "three";
 import type { RoomConfig } from "../config/config.types";
-import { INTERACTABLE_OBJECTS, DEFAULT_SELECTED } from "../config/sceneObjects";
+import {
+  INTERACTABLE_OBJECTS,
+  DEFAULT_SELECTED,
+  type SceneObjectKey,
+} from "../config/sceneObjects";
 import { StateContext, ActionsContext } from "./SceneContext";
 
 const SceneProvider = ({ children }: { children: ReactNode }) => {
-  const [currentSelected, setCurrentSelected] = useState<SceneObjectKey | null>(
-    DEFAULT_SELECTED,
-  );
-  const [currentHovered, setCurrentHovered] = useState<SceneObjectKey | null>(
-    null,
-  );
+  const [currentSelected, setCurrentSelected] = useState<
+    SceneObjectKey | undefined
+  >(DEFAULT_SELECTED);
+  const [currentHovered, setCurrentHovered] = useState<
+    SceneObjectKey | undefined
+  >(undefined);
 
   const interactables = useRef<Record<string, THREE.Object3D>>({});
   const spotlights = useRef<Record<string, THREE.SpotLight>>({});
@@ -25,7 +29,8 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
     if (INTERACTABLE_OBJECTS[key]) setCurrentSelected(key);
   };
   const deselectObject = () => setCurrentSelected(DEFAULT_SELECTED);
-  const setHovered = (key: SceneObjectKey | null) => setCurrentHovered(key);
+  const setHovered = (key: SceneObjectKey | undefined) =>
+    setCurrentHovered(key);
 
   const registerInteractable = (key: string, obj: THREE.Object3D) => {
     interactables.current[key] = obj;
@@ -36,13 +41,15 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
 
   // Getters for the scene objects
   const getSpotlight = (key: string) => spotlights.current[key];
+  const getInteractable = (key: SceneObjectKey) => interactables.current[key];
   const getAllInteractables = () => interactables.current;
   const getAllSpotlights = () => spotlights.current;
 
   // Boolean scene values
   const isSelected = (key: SceneObjectKey) => currentSelected === key;
   const isHovered = (key: SceneObjectKey) => currentHovered === key;
-  const isAnyHovered = () => currentHovered !== null;
+  const isAnyHovered = () => currentHovered !== undefined;
+  const isAnySelected = () => currentSelected !== undefined;
 
   // Camera functions
   const setResetCameraOfFn = (fn: (room: RoomConfig) => void) => {
@@ -69,9 +76,11 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
           setHovered,
           isHovered,
           isAnyHovered,
+          isAnySelected,
           registerInteractable,
           registerSpotlight,
           getSpotlight,
+          getInteractable,
           getAllInteractables,
           getAllSpotlights,
           setMoveCameraToFn,
