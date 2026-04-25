@@ -3,31 +3,14 @@ import { Gltf, Stats } from "@react-three/drei";
 import { DEFAULT_CAMERA_CONFIG as dcc } from "../config/sceneObjects";
 import { CameraFixed, CameraSetup } from "../components/CameraComponents";
 import LightingSystem from "../components/LightingSystem";
-import { useSceneActions, useSceneState } from "../contexts/SceneContext";
 import LandingModal from "../components/landing/LandingModal";
 import SpotlightSystem from "../components/SpotlightSystem";
 import LightningEffect from "../components/LightningEffect";
-
-const DebugPanel = () => {
-  const { currentSelected, currentHovered } = useSceneState();
-  const { getAllInteractables, isAnyHovered, isAnySelected } =
-    useSceneActions();
-
-  return (
-    <div className="fixed right-4 top-4 bg-black/80 text-white p-3 rounded-lg text-sm font-mono z-30000">
-      <div>Interactables: {Object.keys(getAllInteractables()).join(", ")}</div>
-      <div>Selected: {currentSelected || "none"}</div>
-      <div>Hovered: {currentHovered || "none"}</div>
-      <div>Has hover: {isAnyHovered() ? "yes" : "no"}</div>
-      <div>Has selection: {isAnySelected() ? "yes" : "no"}</div>
-    </div>
-  );
-};
+import ScreenMaterialSystem from "../components/ScreenMaterialSystem";
 
 const LandingPage = () => {
   return (
     <div className="w-screen h-screen">
-      <DebugPanel />
       <Canvas camera={{ fov: 50 }} dpr={[1, 2]} frameloop="always">
         {/* <CameraSetup /> */}
         {/* <Stats /> */}
@@ -36,6 +19,7 @@ const LandingPage = () => {
         <LightingSystem />
         <LightningEffect position={[-2.8, -0.4, -4.2]} />
         <SpotlightSystem />
+        <ScreenMaterialSystem />
       </Canvas>
 
       <LandingModal />

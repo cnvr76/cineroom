@@ -2,7 +2,6 @@ import { useThree } from "@react-three/fiber";
 import { useSceneActions } from "../contexts/SceneContext";
 import { useEffect, useState } from "react";
 import * as THREE from "three";
-import { useVideoTexture } from "@react-three/drei";
 import {
   CONSTANTS,
   INTERACTABLE_OBJECTS,
@@ -14,17 +13,6 @@ const useSceneLoader = () => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const { registerInteractable, registerSpotlight, getInteractable } =
     useSceneActions();
-
-  const videoTexture = useVideoTexture("/images/gifs/noise3.mp4", {
-    muted: true,
-    loop: true,
-    autoplay: true,
-    playsInline: true,
-  });
-  // FIXME - change these if needed to place texture correctly
-  videoTexture.repeat.set(1, 1);
-  videoTexture.offset.set(0, 0);
-  // videoTexture.flipY = false;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -46,8 +34,8 @@ const useSceneLoader = () => {
             );
             spotlight.position.set(
               child.position.x,
-              child.position.y + 1,
-              child.position.z,
+              child.position.y + 2,
+              child.position.z + 1,
             );
             spotlight.target = child;
             spotlight.castShadow = true;
@@ -69,30 +57,10 @@ const useSceneLoader = () => {
       if (foundObjects === Object.keys(INTERACTABLE_OBJECTS).length) {
         setIsInitialized(true);
       }
-
-      const tvObject = getInteractable("tv");
-      if (tvObject) {
-        const screenMaterialName = "Screen";
-        tvObject.children.forEach((child) => {
-          const mesh = child as THREE.Mesh;
-          const material = mesh.material as THREE.Material;
-
-          if (
-            mesh.isMesh &&
-            material &&
-            material.name.includes(screenMaterialName)
-          ) {
-            mesh.material = new THREE.MeshBasicMaterial({
-              map: videoTexture,
-              toneMapped: true,
-            });
-          }
-        });
-      }
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [scene, videoTexture, getInteractable]);
+  }, [scene, getInteractable]);
 
   return isInitialized;
 };

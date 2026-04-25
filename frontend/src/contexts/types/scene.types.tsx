@@ -29,10 +29,10 @@ export interface SceneActions {
   isMediaHovered: () => boolean;
   selectMedia: (id: string) => void;
   deselectMedia: () => void;
-  getMedia: (id: string) => IMediaBrief | undefined;
+  getMedia: (id: string | undefined) => IMediaBrief | undefined;
   registerMedia: (data: IMediaBrief) => void;
   unregisterAllMedia: () => void;
-  setHoveredMedia: (id: string) => void;
+  setHoveredMedia: (id: string | undefined) => void;
 
   registerInteractable: (key: string, object: THREE.Object3D) => void;
   registerSpotlight: (key: string, spotlight: THREE.SpotLight) => void;

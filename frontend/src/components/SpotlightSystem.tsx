@@ -1,6 +1,6 @@
 import { useThree, useFrame, type RootState } from "@react-three/fiber";
 import useSceneLoader from "../hooks/useSceneLoader";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSceneActions, useSceneState } from "../contexts/SceneContext";
 import * as THREE from "three";
 import { CONSTANTS, type SceneObjectKey } from "../config/sceneObjects";
@@ -10,15 +10,17 @@ const SpotlightSystem = () => {
   const isInitialized = useSceneLoader();
   const [interactionsEnabled, setInteractionsEnabled] =
     useState<boolean>(false);
-  const { currentHovered } = useSceneState();
+  const { currentHovered, currentHoveredMedia, currentMedia } = useSceneState();
   const {
     setHovered,
     isAnyHovered,
     isAnySelected,
+    isHovered,
     getSpotlight,
     getAllInteractables,
     getAllSpotlights,
   } = useSceneActions();
+  const tempColor = useMemo(() => new THREE.Color(), []);
 
   useEffect(() => {
     if (isInitialized) {
@@ -77,21 +79,27 @@ const SpotlightSystem = () => {
 
     const k = 6;
     const clampedDelta = Math.min(delta, 1 / 30);
+    const activeMedia = currentHoveredMedia || currentMedia;
+    const targetColor =
+      activeMedia?.dominantColor || CONSTANTS.SPOTLIGHT_DEFAULT_COLOR;
+    tempColor.set(targetColor);
 
-    Object.keys(getAllSpotlights()).forEach((key) => {
+    (Object.keys(getAllSpotlights()) as SceneObjectKey[]).forEach((key) => {
       const spotlight = getSpotlight(key);
 
       if (spotlight) {
-        const isHovered = currentHovered === key;
-        const targetIntensity = isHovered
-          ? CONSTANTS.SPOTLIGHT_MAX_INTENSITY
-          : 0;
+        const targetIntensity =
+          isHovered(key) || currentHoveredMedia !== undefined
+            ? CONSTANTS.SPOTLIGHT_MAX_INTENSITY
+            : 0;
 
         spotlight.intensity = THREE.MathUtils.lerp(
           spotlight.intensity,
           targetIntensity,
           clampedDelta * k,
         );
+
+        spotlight.color.lerp(tempColor, clampedDelta * k);
       }
     });
   });

@@ -1,11 +1,17 @@
-import React from "react";
 import type { IMediaBrief } from "../../services/types/media.types";
-
-const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+import { IMG_BASE } from "../../config/sceneObjects";
+import { useSceneActions } from "../../contexts/SceneContext";
 
 const MediaCard = ({ data }: { data: IMediaBrief }) => {
+  const { setHoveredMedia, selectMedia } = useSceneActions();
+
   return (
-    <article className="relative w-full aspect-2/3 rounded-2xl overflow-hidden shadow-lg font-sans text-white group cursor-pointer transition-transform hover:scale-105">
+    <article
+      onMouseEnter={() => setHoveredMedia(data._id)}
+      onMouseLeave={() => setHoveredMedia(undefined)}
+      onClick={() => selectMedia(data._id)}
+      className="relative w-full aspect-2/3 rounded-2xl overflow-hidden shadow-lg font-sans text-white group cursor-pointer transition-transform hover:scale-105"
+    >
       <img
         src={`${IMG_BASE}${data.posterPath}`}
         alt={`Poster ${data.title}`}

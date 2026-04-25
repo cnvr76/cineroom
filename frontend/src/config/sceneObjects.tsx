@@ -11,6 +11,8 @@ export type SceneModalKey = keyof typeof MODALS;
 export const DEFAULT_SELECTED: SceneObjectKey | undefined = undefined;
 export const DEFAULT_MODAL: SceneModalKey | null = "landing";
 
+export const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+
 export const DEFAULT_CAMERA_CONFIG = {
   position: [0.74, 0.87, 0.39],
   target: [-0.31, 0.21, -0.39],
@@ -48,4 +50,6 @@ export const CONSTANTS: Record<string, any> = {
 
   SPOTLIGHT_MAX_INTENSITY: 10,
   SPOTLIGHT_DEFAULT_COLOR: 0xdbf4ff,
+
+  MEDIA_HOVER_TIMEOUT: 7,
 };

@@ -2,10 +2,11 @@ import { useFrame, type RootState } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 import { CONSTANTS } from "../config/sceneObjects";
-import { useSceneActions } from "../contexts/SceneContext";
+import { useSceneActions, useSceneState } from "../contexts/SceneContext";
 
 const LightingSystem = () => {
   const { isAnyHovered, isAnySelected } = useSceneActions();
+  const { currentHoveredMedia } = useSceneState();
 
   const ambientLightRef = useRef<THREE.AmbientLight>(null);
 
@@ -14,7 +15,7 @@ const LightingSystem = () => {
 
     const clampedDelta = Math.min(delta, 1 / 30);
     const targetAmbient =
-      isAnyHovered() || isAnySelected()
+      isAnyHovered() || isAnySelected() || currentHoveredMedia !== undefined
         ? 0.2
         : CONSTANTS.AMBIENT_LIGHT_INTENSITY;
     const k = 6;

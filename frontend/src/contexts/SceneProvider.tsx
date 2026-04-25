@@ -56,14 +56,13 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
   const registerMedia = (data: IMediaBrief) => {
     media.current[data._id] = data;
   };
-  const getMedia = (id: string) => media.current[id];
+  const getMedia = (id: string | undefined) =>
+    id ? media.current[id] : undefined;
   const unregisterAllMedia = () => (media.current = {});
   const isMediaSelected = () => currentMedia !== undefined;
   const isMediaHovered = () => currentHoveredMedia !== undefined;
-  const setHoveredMedia = (id: string) => {
-    const m = getMedia(id);
-    if (m) setCurrentHoveredMedia(m);
-  };
+  const setHoveredMedia = (id: string | undefined) =>
+    setCurrentHoveredMedia(getMedia(id));
   const selectMedia = (id: string) => {
     const m = getMedia(id);
     if (m) setCurrentMedia(m);
