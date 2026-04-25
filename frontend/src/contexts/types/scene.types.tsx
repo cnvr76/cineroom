@@ -25,8 +25,8 @@ export interface SceneActions {
   isAnyHovered: () => boolean;
   isAnySelected: () => boolean;
 
-  isMediaSelected: (id: string) => boolean;
-  isMediaHovered: (id: string) => boolean;
+  isMediaSelected: () => boolean;
+  isMediaHovered: () => boolean;
   selectMedia: (id: string) => void;
   deselectMedia: () => void;
   getMedia: (id: string) => IMediaBrief | undefined;

@@ -6,6 +6,7 @@ import LightingSystem from "../components/LightingSystem";
 import { useSceneActions, useSceneState } from "../contexts/SceneContext";
 import LandingModal from "../components/landing/LandingModal";
 import SpotlightSystem from "../components/SpotlightSystem";
+import LightningEffect from "../components/LightningEffect";
 
 const DebugPanel = () => {
   const { currentSelected, currentHovered } = useSceneState();
@@ -33,6 +34,7 @@ const LandingPage = () => {
         <CameraFixed position={dcc.position} target={dcc.target} />
         <Gltf src="/models/scene.glb" />
         <LightingSystem />
+        <LightningEffect position={[-2.8, -0.4, -4.2]} />
         <SpotlightSystem />
       </Canvas>
 

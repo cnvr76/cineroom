@@ -57,8 +57,8 @@ const useSceneLoader = () => {
             spotlight.decay = 1;
             spotlight.angle = Math.PI / 5;
 
-            const spotlightHelper = new THREE.SpotLightHelper(spotlight);
-            objectsToAdd.push(spotlight, spotlight.target, spotlightHelper);
+            // const spotlightHelper = new THREE.SpotLightHelper(spotlight);
+            objectsToAdd.push(spotlight, spotlight.target); //, spotlightHelper);
 
             registerSpotlight(key, spotlight);
           }

@@ -39,7 +39,7 @@ export const MODALS = {
 } satisfies ModalsMap;
 
 export const CONSTANTS: Record<string, any> = {
-  AMBIENT_LIGHT_INTENSITY: 2.5,
+  AMBIENT_LIGHT_INTENSITY: 3,
 
   MAX_DIRECTIONAL_LIGHT_INTENSITY: 3,
   MIN_DIRECTIONAL_LIGHT_INTENSITY: 0.01,

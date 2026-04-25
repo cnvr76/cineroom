@@ -41,8 +41,9 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
     if (INTERACTABLE_OBJECTS[key]) setCurrentSelected(key);
   };
   const deselectObject = () => setCurrentSelected(DEFAULT_SELECTED);
-  const setHovered = (key: SceneObjectKey | undefined) =>
+  const setHovered = (key: SceneObjectKey | undefined) => {
     setCurrentHovered(key);
+  };
 
   const registerInteractable = (key: string, obj: THREE.Object3D) => {
     interactables.current[key] = obj;
@@ -55,10 +56,10 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
   const registerMedia = (data: IMediaBrief) => {
     media.current[data._id] = data;
   };
-  const unregisterAllMedia = () => (media.current = {});
-  const isMediaSelected = (id: string) => currentMedia !== undefined;
-  const isMediaHovered = (id: string) => currentHoveredMedia !== undefined;
   const getMedia = (id: string) => media.current[id];
+  const unregisterAllMedia = () => (media.current = {});
+  const isMediaSelected = () => currentMedia !== undefined;
+  const isMediaHovered = () => currentHoveredMedia !== undefined;
   const setHoveredMedia = (id: string) => {
     const m = getMedia(id);
     if (m) setCurrentHoveredMedia(m);

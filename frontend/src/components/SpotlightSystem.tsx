@@ -1,10 +1,9 @@
 import { useThree, useFrame, type RootState } from "@react-three/fiber";
 import useSceneLoader from "../hooks/useSceneLoader";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSceneActions, useSceneState } from "../contexts/SceneContext";
 import * as THREE from "three";
 import { CONSTANTS, type SceneObjectKey } from "../config/sceneObjects";
-import { useHelper } from "@react-three/drei";
 
 const SpotlightSystem = () => {
   const { raycaster, camera, mouse } = useThree();
@@ -47,7 +46,6 @@ const SpotlightSystem = () => {
     if (!interactionsEnabled || !isInitialized) return;
     if (document.hidden) return;
 
-    const clampedDelta = Math.min(delta, 1 / 30);
     const interactables = getAllInteractables();
 
     raycaster.setFromCamera(mouse, camera);
@@ -78,6 +76,8 @@ const SpotlightSystem = () => {
       isAnyHovered() && !isAnySelected() ? "pointer" : "default";
 
     const k = 6;
+    const clampedDelta = Math.min(delta, 1 / 30);
+
     Object.keys(getAllSpotlights()).forEach((key) => {
       const spotlight = getSpotlight(key);
 
