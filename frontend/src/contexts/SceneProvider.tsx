@@ -1,13 +1,17 @@
 import { useRef, useState, type ReactNode } from "react";
 import type { MoveObjectFnParams } from "./types/scene.types";
 import * as THREE from "three";
-import type { RoomConfig } from "../config/config.types";
+import type { CameraConfig } from "../config/config.types";
 import {
   INTERACTABLE_OBJECTS,
   DEFAULT_SELECTED,
   type SceneObjectKey,
 } from "../config/sceneObjects";
-import { StateContext, ActionsContext } from "./SceneContext";
+import {
+  StateContext,
+  ActionsContext,
+  AnimationsContext,
+} from "./SceneContext";
 import type { IMediaBrief } from "../services/types/media.types";
 
 const SceneProvider = ({ children }: { children: ReactNode }) => {
@@ -32,8 +36,8 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
   const spotlights = useRef<Record<string, THREE.SpotLight>>({});
   const media = useRef<Record<string, IMediaBrief>>({});
 
-  const moveCameraToFn = useRef<(objectKey: SceneObjectKey) => void>(() => {});
-  const resetCameraOfFn = useRef<(room: RoomConfig) => void>(() => {});
+  const moveCameraToFn = useRef<(config: CameraConfig) => void>(() => {});
+  const resetCameraFn = useRef<() => void>(() => {});
   const moveObjectToFn = useRef<MoveObjectFnParams>(() => {});
 
   // --- Register functions for scene objects ---
@@ -82,19 +86,21 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
   const isAnySelected = () => currentSelected !== undefined;
 
   // --- Camera functions ---
-  const setResetCameraOfFn = (fn: (room: RoomConfig) => void) => {
-    resetCameraOfFn.current = fn;
-  };
-  const setMoveCameraToFn = (fn: (key: SceneObjectKey) => void) => {
+  const setMoveCameraToFn = (fn: (config: CameraConfig) => void) => {
     moveCameraToFn.current = fn;
   };
-  const getResetCameraOfFn = () => resetCameraOfFn.current;
+  const setResetCameraFn = (fn: () => void) => {
+    resetCameraFn.current = fn;
+  };
+
+  const getResetCameraFn = () => resetCameraFn.current;
   const getMoveCameraToFn = () => moveCameraToFn.current;
 
   // TODO - make function to move objects in the scene (for transitions & intros)
   const setMoveObjectToFn = (fn: MoveObjectFnParams) => {
     moveObjectToFn.current = fn;
   };
+  const getMoveObjectToFn = () => moveObjectToFn.current;
 
   return (
     <StateContext.Provider
@@ -130,14 +136,20 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
           getInteractable,
           getAllInteractables,
           getAllSpotlights,
-          setMoveCameraToFn,
-          setResetCameraOfFn,
-          setMoveObjectToFn,
-          getResetCameraOfFn,
-          getMoveCameraToFn,
         }}
       >
-        {children}
+        <AnimationsContext
+          value={{
+            setMoveCameraToFn,
+            setMoveObjectToFn,
+            setResetCameraFn,
+            getMoveCameraToFn,
+            getMoveObjectToFn,
+            getResetCameraFn,
+          }}
+        >
+          {children}
+        </AnimationsContext>
       </ActionsContext.Provider>
     </StateContext.Provider>
   );

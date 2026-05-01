@@ -3,46 +3,6 @@ import SceneProvider from "./contexts/SceneProvider";
 import LandingPage from "./pages/LandingPage";
 import { useSceneActions, useSceneState } from "./contexts/SceneContext";
 
-const createRoutes = () =>
-  createBrowserRouter([
-    {
-      path: "/",
-      element: (
-        <SceneProvider>
-          <DebugPanel />
-          <Outlet />
-        </SceneProvider>
-      ),
-      children: [
-        {
-          index: true,
-          element: <LandingPage />,
-        },
-        {
-          path: "auth",
-          element: null,
-        },
-        {
-          path: "profile",
-          children: [
-            {
-              path: "me",
-              element: null,
-            },
-            {
-              path: "favorite",
-              element: null,
-            },
-          ],
-        },
-        {
-          path: "admin",
-          element: null,
-        },
-      ],
-    },
-  ]);
-
 const DebugPanel = () => {
   const { currentSelected, currentHovered, currentHoveredMedia, currentMedia } =
     useSceneState();
@@ -62,9 +22,46 @@ const DebugPanel = () => {
   );
 };
 
-function App() {
-  const router = createRoutes();
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <SceneProvider>
+        <DebugPanel />
+        <Outlet />
+      </SceneProvider>
+    ),
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: "auth",
+        element: null,
+      },
+      {
+        path: "profile",
+        children: [
+          {
+            path: "me",
+            element: null,
+          },
+          {
+            path: "favorite",
+            element: null,
+          },
+        ],
+      },
+      {
+        path: "admin",
+        element: null,
+      },
+    ],
+  },
+]);
 
+function App() {
   return <RouterProvider router={router} />;
 }
 

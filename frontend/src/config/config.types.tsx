@@ -7,11 +7,11 @@ export type CameraConfig = {
   target: Vector3Tuple;
   quaternion?: Vector4Tuple;
   animationSpeed: number;
-  changeSpeed: number;
+  changeSpeed?: number;
 };
-
-export type RoomConfig = {
-  defaultPosition: CameraConfig;
+type CameraConfigObject = {
+  default: CameraConfig;
+  target?: CameraConfig;
 };
 
 export type UIConfig = {
@@ -24,10 +24,11 @@ export type UIConfig = {
 
 export type InteractableObject = {
   objectName: string;
-  camera: CameraConfig;
+  camera: CameraConfigObject;
   modal?: ReactNode;
   func?: void;
 };
 
 export type InteractableObjectsMap = Record<string, InteractableObject>;
 export type ModalsMap = Record<string, ModalPlacement>;
+export type CameraConfigMap = Record<string, CameraConfigObject>;

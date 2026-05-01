@@ -60,6 +60,12 @@ export class MediaController {
     throw new NotImplementedException();
   }
 
+  @Get('/search/:title')
+  async getSearched(@Param('title') title: string) {
+    // TODO
+    throw new NotImplementedException();
+  }
+
   @Get('/:type/:id')
   async getSpecific(
     @Param('type') mediaType: MediaType,

@@ -1,4 +1,4 @@
-import type { RoomConfig } from "../../config/config.types";
+import type { CameraConfig } from "../../config/config.types";
 import * as THREE from "three";
 import type { SceneObjectKey } from "../../config/sceneObjects";
 import type { IMediaBrief } from "../../services/types/media.types";
@@ -40,10 +40,14 @@ export interface SceneActions {
   getInteractable: (key: SceneObjectKey) => THREE.Object3D | undefined;
   getAllInteractables: () => Record<string, THREE.Object3D>;
   getAllSpotlights: () => Record<string, THREE.SpotLight>;
+}
 
-  setMoveCameraToFn: (fn: (key: SceneObjectKey) => void) => void;
+export interface SceneAnimations {
+  setMoveCameraToFn: (fn: (config: CameraConfig) => void) => void;
   setMoveObjectToFn: (fn: MoveObjectFnParams) => void;
-  setResetCameraOfFn: (fn: (room: RoomConfig) => void) => void;
-  getMoveCameraToFn: () => (key: SceneObjectKey) => void;
-  getResetCameraOfFn: () => (room: RoomConfig) => void;
+  setResetCameraFn: (fn: () => void) => void;
+
+  getMoveCameraToFn: () => (config: CameraConfig) => void;
+  getMoveObjectToFn: () => MoveObjectFnParams;
+  getResetCameraFn: () => () => void;
 }

@@ -1,6 +1,6 @@
 import LandingModal from "../components/landing/LandingModal";
 import type {
-  CameraConfig,
+  CameraConfigMap,
   InteractableObjectsMap,
   ModalsMap,
 } from "./config.types";
@@ -13,17 +13,27 @@ export const DEFAULT_MODAL: SceneModalKey | null = "landing";
 
 export const IMG_BASE = "https://image.tmdb.org/t/p/w500";
 
-export const DEFAULT_CAMERA_CONFIG = {
-  position: [0.74, 0.87, 0.39],
-  target: [-0.31, 0.21, -0.39],
-  animationSpeed: 1,
-  changeSpeed: 2,
-} satisfies CameraConfig;
+export const CAMERA_CONFIG = {
+  landing: {
+    default: {
+      position: [0.74, 0.87, 0.39],
+      target: [-0.31, 0.21, -0.39],
+      animationSpeed: 1,
+      changeSpeed: 2,
+    },
+    target: {
+      position: [0.51, 0.3, -0.2],
+      target: [-0.23, 0.33, -0.04],
+      animationSpeed: 2,
+      changeSpeed: 2,
+    },
+  },
+} satisfies CameraConfigMap;
 
 export const INTERACTABLE_OBJECTS = {
   tv: {
     objectName: "TV",
-    camera: DEFAULT_CAMERA_CONFIG,
+    camera: CAMERA_CONFIG.landing,
     modal: <LandingModal />,
   },
 } satisfies InteractableObjectsMap;
