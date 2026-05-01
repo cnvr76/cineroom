@@ -50,4 +50,7 @@ export interface SceneAnimations {
   getMoveCameraToFn: () => (config: CameraConfig) => void;
   getMoveObjectToFn: () => MoveObjectFnParams;
   getResetCameraFn: () => () => void;
+
+  isAnimating: boolean;
+  setIsAnimating: (value: boolean) => void;
 }

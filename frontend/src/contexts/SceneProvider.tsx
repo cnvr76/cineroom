@@ -22,6 +22,7 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
   const [currentHovered, setCurrentHovered] = useState<
     SceneObjectKey | undefined
   >(undefined);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
   // --- States of the media ---
   const [currentMedia, setCurrentMedia] = useState<IMediaBrief | undefined>(
@@ -146,6 +147,8 @@ const SceneProvider = ({ children }: { children: ReactNode }) => {
             getMoveCameraToFn,
             getMoveObjectToFn,
             getResetCameraFn,
+            isAnimating,
+            setIsAnimating,
           }}
         >
           {children}

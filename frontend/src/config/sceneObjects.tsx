@@ -48,6 +48,11 @@ export const MODALS = {
     perspective: 1700,
     background: "transparent",
   },
+  trailer: {
+    width: "80%",
+    height: "80%",
+    inset: "center",
+  },
 } satisfies ModalsMap;
 
 export const CONSTANTS: Record<string, any> = {

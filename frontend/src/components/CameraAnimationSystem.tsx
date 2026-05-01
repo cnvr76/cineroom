@@ -1,6 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import type { CameraConfig } from "../config/config.types";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useSceneActions, useSceneAnimations } from "../contexts/SceneContext";
 
@@ -10,15 +10,16 @@ const CameraAnimationSystem = ({
   defaultConfig: CameraConfig;
 }) => {
   const { camera } = useThree();
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
   const targetPosition = useRef(new THREE.Vector3());
   const targetTarget = useRef(new THREE.Vector3());
   const currentTarget = useRef(new THREE.Vector3(0, 0, 0));
-
   const animationDuration = useRef(2);
 
-  const { setMoveCameraToFn, setResetCameraFn } = useSceneAnimations();
+  const isAnimatingRef = useRef(false);
+
+  const { setMoveCameraToFn, setResetCameraFn, setIsAnimating } =
+    useSceneAnimations();
   const { deselectObject } = useSceneActions();
 
   useEffect(() => {
@@ -27,17 +28,24 @@ const CameraAnimationSystem = ({
     camera.lookAt(currentTarget.current);
   }, [camera, defaultConfig]);
 
-  const animateToPosition = useCallback((config: CameraConfig) => {
-    targetPosition.current.set(...config.position);
-    targetTarget.current.set(...config.target);
-    animationDuration.current = config.animationSpeed || 2;
-    setIsAnimating(true);
-  }, []);
+  const animateToPosition = useCallback(
+    (config: CameraConfig) => {
+      targetPosition.current.set(...config.position);
+      targetTarget.current.set(...config.target);
+      animationDuration.current = config.animationSpeed || 2;
+
+      isAnimatingRef.current = true;
+      setIsAnimating(true);
+    },
+    [setIsAnimating],
+  );
 
   const animateToDefault = useCallback(() => {
-    animateToPosition(defaultConfig);
     deselectObject();
-  }, []);
+    setTimeout(() => {
+      animateToPosition(defaultConfig);
+    }, 100);
+  }, [animateToPosition, defaultConfig, deselectObject]);
 
   useEffect(() => {
     setMoveCameraToFn(animateToPosition);
@@ -50,7 +58,7 @@ const CameraAnimationSystem = ({
   ]);
 
   useFrame((_, delta: number) => {
-    if (!isAnimating || document.hidden) return;
+    if (!isAnimatingRef.current || document.hidden) return;
 
     const clampedDelta = Math.min(delta, 1 / 30);
     const speed = animationDuration.current;
@@ -61,7 +69,9 @@ const CameraAnimationSystem = ({
 
     const posDist = camera.position.distanceTo(targetPosition.current);
     const lookDist = currentTarget.current.distanceTo(targetTarget.current);
+
     if (posDist < 0.01 && lookDist < 0.01) {
+      isAnimatingRef.current = false;
       setIsAnimating(false);
     }
   });

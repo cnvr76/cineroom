@@ -27,7 +27,7 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <SceneProvider>
-        <DebugPanel />
+        {/* {import.meta.env.DEV && <DebugPanel />} */}
         <Outlet />
       </SceneProvider>
     ),

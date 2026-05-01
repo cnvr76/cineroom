@@ -1,9 +1,12 @@
 import { useThree, useFrame, type RootState } from "@react-three/fiber";
 import useSceneLoader from "../hooks/useSceneLoader";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSceneActions, useSceneState } from "../contexts/SceneContext";
 import * as THREE from "three";
 import { CONSTANTS, type SceneObjectKey } from "../config/sceneObjects";
+
+// --- Raycast throttle: 30Hz max, only when pointer actually moved ---
+const RAYCAST_INTERVAL_MS = 33;
 
 const SpotlightSystem = () => {
   const { raycaster, camera, mouse } = useThree();
@@ -21,6 +24,11 @@ const SpotlightSystem = () => {
     getAllSpotlights,
   } = useSceneActions();
   const tempColor = useMemo(() => new THREE.Color(), []);
+
+  // --- Refs for raycast / cursor throttling ---
+  const pointerMovedRef = useRef<boolean>(true);
+  const lastRaycastRef = useRef<number>(0);
+  const cursorRef = useRef<string>("default");
 
   useEffect(() => {
     if (isInitialized) {
@@ -44,38 +52,65 @@ const SpotlightSystem = () => {
       window.removeEventListener("pointermove", activateInteractibles);
   }, []);
 
+  // Mark that the pointer moved — used to skip raycast on idle frames
+  useEffect(() => {
+    const onPointerMove = () => {
+      pointerMovedRef.current = true;
+    };
+    window.addEventListener("pointermove", onPointerMove);
+    return () => window.removeEventListener("pointermove", onPointerMove);
+  }, []);
+
   useFrame((state: RootState, delta: number) => {
     if (!interactionsEnabled || !isInitialized) return;
     if (document.hidden) return;
 
-    const interactables = getAllInteractables();
+    // --- Hover detection: throttled + skipped while a selection is active ---
+    // Selection means camera is animating / locked on an object — there is
+    // nothing to hover then, so we save a full scene raycast every frame.
+    const now = performance.now();
+    const canRaycast =
+      !isAnySelected() &&
+      pointerMovedRef.current &&
+      now - lastRaycastRef.current >= RAYCAST_INTERVAL_MS;
 
-    raycaster.setFromCamera(mouse, camera);
-    const meshes = Object.values(interactables);
+    if (canRaycast) {
+      pointerMovedRef.current = false;
+      lastRaycastRef.current = now;
 
-    if (meshes.length === 0) return;
+      const interactables = getAllInteractables();
+      const meshes = Object.values(interactables);
 
-    const intersects = raycaster.intersectObjects(meshes, true);
+      if (meshes.length > 0) {
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(meshes, true);
 
-    let newHovered: string | undefined = undefined;
-    if (intersects.length > 0) {
-      const hitObject = intersects[0].object;
+        let newHovered: string | undefined = undefined;
+        if (intersects.length > 0) {
+          const hitObject = intersects[0].object;
 
-      let searchObject: THREE.Object3D | null = hitObject;
-      while (searchObject && !newHovered) {
-        newHovered = Object.keys(interactables).find(
-          (key) => interactables[key] === searchObject,
-        );
-        searchObject = searchObject.parent;
+          let searchObject: THREE.Object3D | null = hitObject;
+          while (searchObject && !newHovered) {
+            newHovered = Object.keys(interactables).find(
+              (key) => interactables[key] === searchObject,
+            );
+            searchObject = searchObject.parent;
+          }
+        }
+
+        if (newHovered !== currentHovered) {
+          setHovered(newHovered as SceneObjectKey);
+        }
       }
     }
 
-    if (newHovered !== currentHovered && !isAnySelected()) {
-      setHovered(newHovered as SceneObjectKey);
-    }
-
-    document.body.style.cursor =
+    // --- Cursor: only touch the DOM when the value actually changes ---
+    const nextCursor =
       isAnyHovered() && !isAnySelected() ? "pointer" : "default";
+    if (nextCursor !== cursorRef.current) {
+      cursorRef.current = nextCursor;
+      document.body.style.cursor = nextCursor;
+    }
 
     const k = 6;
     const clampedDelta = Math.min(delta, 1 / 30);

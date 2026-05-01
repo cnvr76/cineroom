@@ -12,17 +12,26 @@ import LightningEffect from "../components/LightningEffect";
 import ScreenMaterialSystem from "../components/ScreenMaterialSystem";
 import ClickDetectionSystem from "../components/ClickDetectionSystem";
 import CameraAnimationSystem from "../components/CameraAnimationSystem";
-import { useSceneActions } from "../contexts/SceneContext";
+import { useSceneActions, useSceneAnimations } from "../contexts/SceneContext";
+import TrailerModal from "../components/shared/TrailerModal";
 
 const LandingUI = () => {
   const { isSelected } = useSceneActions();
-  return !isSelected("tv") ? <LandingModal /> : null;
+  const { isAnimating } = useSceneAnimations();
+  if (!isSelected("tv")) return <LandingModal />;
+  if (!isAnimating && isSelected("tv")) return <TrailerModal />;
+  return null;
 };
 
 const LandingPage = () => {
   return (
     <div className="w-screen h-screen">
-      <Canvas camera={{ fov: 50 }} dpr={[1, 2]} frameloop="always">
+      <Canvas
+        camera={{ fov: 50 }}
+        dpr={[1, 1.5]}
+        performance={{ min: 0.5 }}
+        frameloop="always"
+      >
         {/* <CameraSetup /> */}
         {/* <Stats /> */}
         <CameraFixed
