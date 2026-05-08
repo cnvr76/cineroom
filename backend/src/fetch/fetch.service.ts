@@ -50,6 +50,20 @@ export class FetchService {
     }
   }
 
+  async fetchSearch(query: string) {
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.get(
+          `${this.BASE_URL}/search/multi?api_key=${this.APIKEY}&query=${encodeURIComponent(query)}`,
+        ),
+      );
+      return data;
+    } catch (error) {
+      console.error('TMDB search error:', (error as Error).message);
+      return null;
+    }
+  }
+
   async fetchMedia(page: number, mediaType: MediaType) {
     try {
       const { data }: { data: ITmdbResponse } = await firstValueFrom(

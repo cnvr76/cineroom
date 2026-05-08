@@ -12,6 +12,7 @@ export interface IMediaBrief {
   popularity: number;
   releaseDate: string;
   dominantColor: string;
+  isSaved: boolean;
 
   createdAt: string;
   updatedAt: string;

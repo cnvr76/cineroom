@@ -28,5 +28,7 @@ export const api = {
       request<IMediaFull | undefined>(`/media/${mediaType}/${id}`),
     search: (query: string) =>
       request<IMediaFull[]>(`/media/search?q=${encodeURIComponent(query)}`),
+    toggleSave: (id: string) =>
+      request<IMediaBrief | undefined>(`/media/${id}/save`),
   },
 };

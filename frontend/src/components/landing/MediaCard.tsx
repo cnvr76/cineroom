@@ -1,6 +1,7 @@
 import type { IMediaBrief } from "../../services/types/media.types";
 import { IMG_BASE } from "../../config/sceneObjects";
 import { useSceneActions } from "../../contexts/SceneContext";
+import SaveButton from "../widgets/SaveButton";
 
 const MediaCard = ({ data }: { data: IMediaBrief }) => {
   const { setHoveredMedia, selectMedia } = useSceneActions();
@@ -30,10 +31,13 @@ const MediaCard = ({ data }: { data: IMediaBrief }) => {
           {data.title}
         </h1>
 
-        <div className="flex gap-2 text-[11px] font-medium text-gray-200">
-          <span className="text-[0.8rem] bg-white/10 backdrop-blur-md px-2 py-1 rounded border border-white/5">
-            {new Date(data.releaseDate).getFullYear()}
-          </span>
+        <div className="flex items-center h-full w-full justify-between">
+          <div className="flex gap-2 text-[11px] font-medium text-gray-200">
+            <span className="text-[0.8rem] bg-white/10 backdrop-blur-md px-2 py-1 rounded border border-white/5">
+              {new Date(data.releaseDate).getFullYear()}
+            </span>
+          </div>
+          <SaveButton id={data._id} isSaved={data.isSaved} />
         </div>
       </div>
     </article>

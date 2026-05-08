@@ -6,10 +6,10 @@ import {
   Param,
   UseGuards,
   Post,
-  NotImplementedException,
   Patch,
   Body,
   DefaultValuePipe,
+  Delete,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import type { MediaType } from './media.types';
@@ -42,6 +42,15 @@ export class MediaController {
     return await this.moviesService.updateMedia(id, body);
   }
 
+  @Post('/seed')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async seedMedia(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('type') mediaType: MediaType | 'all' = 'all',
+  ) {
+    return await this.moviesService.seedFromTmdb(page, mediaType);
+  }
+
   @Get('/me/favorites')
   @UseGuards(AuthGuard('jwt'))
   async getPaginatedFavorites(
@@ -49,21 +58,31 @@ export class MediaController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('type') mediaType: MediaType | 'all' = 'all',
   ) {
-    // TODO
-    throw new NotImplementedException();
+    return await this.moviesService.getPaginatedFavorites(
+      user.userId,
+      mediaType,
+      page,
+    );
   }
 
   @Post('/:id/save')
   @UseGuards(AuthGuard('jwt'))
   async markAsFavorite(@CurrentUser() user: JwtUser, @Param('id') id: string) {
-    // TODO
-    throw new NotImplementedException();
+    return await this.moviesService.addFavorite(id, user.userId);
+  }
+
+  @Delete('/:id/save')
+  @UseGuards(AuthGuard('jwt'))
+  async unmarkAsFavorite(
+    @CurrentUser() user: JwtUser,
+    @Param('id') id: string,
+  ) {
+    return await this.moviesService.removeFavorite(id, user.userId);
   }
 
   @Get('/search')
   async getSearched(@Query('q') query: string) {
-    // TODO
-    throw new NotImplementedException();
+    return await this.moviesService.searchFor(query);
   }
 
   @Get('/:type/:id')

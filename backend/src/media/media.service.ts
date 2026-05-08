@@ -34,32 +34,88 @@ export class MediaService {
     return media;
   }
 
+  async addFavorite(mediaId: string, userId: string) {
+    const exists = await this.movieModel.exists({ _id: mediaId });
+    if (!exists) throw new NotFoundException(`Media ${mediaId} not found`);
+
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $addToSet: { favorites: mediaId } },
+    );
+    return { saved: true };
+  }
+
+  async removeFavorite(mediaId: string, userId: string) {
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $pull: { favorites: mediaId } },
+    );
+    return { saved: false };
+  }
+
+  async getPaginatedFavorites(
+    userId: string,
+    mediaType: MediaType | 'all',
+    page: number = 1,
+    batch: number = 20,
+  ) {
+    const user = await this.userModel
+      .findById(userId)
+      .select('favorites')
+      .lean();
+    if (!user) throw new NotFoundException('User not found');
+
+    const filter: QueryFilter<Media> = { _id: { $in: user.favorites } };
+    if (mediaType !== 'all') filter.mediaType = mediaType;
+
+    return await this.movieModel
+      .find(filter)
+      .skip((page - 1) * batch)
+      .sort({ releaseDate: -1 })
+      .limit(batch)
+      .lean();
+  }
+
+  async searchFor(query: string) {
+    const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safe = escapeRegex(query);
+    const dbMatches = await this.movieModel
+      .find({ title: { $regex: safe, $options: 'i' } })
+      .limit(20)
+      .lean();
+
+    if (dbMatches.length > 0) return dbMatches;
+
+    const tmdbResponse = await this.fetchService.fetchSearch(query);
+    const tmbdResults = tmdbResponse?.results || [];
+    const tmbdMatches = tmbdResults.filter(
+      (res) => res.media_type === 'movie' || res.media_type === 'tv',
+    );
+
+    if (tmbdMatches.length === 0) return [];
+    await this.saveNewMedia(tmbdMatches);
+    return this.movieModel
+      .find({
+        tmdbId: { $in: tmbdMatches.map((res) => res.id) },
+      })
+      .lean();
+  }
+
   async getPaginated(
     mediaType: MediaType | 'all',
     page: number = 1,
     batch: number = 20,
-    forgiveMissing: number = 2,
   ) {
     const filter: QueryFilter<Media> = {};
     filter.mediaType =
       mediaType === 'all' ? { $in: ['movie', 'tv'] } : mediaType;
 
-    const fetchdb = () =>
-      this.movieModel
-        .find(filter)
-        .skip((page - 1) * batch)
-        .sort({ releaseDate: -1 })
-        .limit(batch)
-        .lean();
-
-    let media = await fetchdb();
-
-    if (media.length < batch - forgiveMissing) {
-      await this.getNewData(page, mediaType);
-      media = await fetchdb();
-    }
-
-    return media;
+    return this.movieModel
+      .find(filter)
+      .skip((page - 1) * batch)
+      .sort({ releaseDate: -1 })
+      .limit(batch)
+      .lean();
   }
 
   async getDetails(id: string, mediaType: MediaType) {
@@ -123,7 +179,7 @@ export class MediaService {
     }
   }
 
-  private async getNewData(page: number, mediaType: MediaType | 'all' = 'all') {
+  async seedFromTmdb(page: number, mediaType: MediaType | 'all' = 'all') {
     if (mediaType === 'all') {
       const [movies, tvs] = await Promise.all([
         this.fetchService.fetchMedia(page, 'movie'),
@@ -138,7 +194,8 @@ export class MediaService {
   }
 
   private async saveNewMedia(entries: TmdbResult[] | undefined) {
-    if (!entries || entries.length === 0) return;
+    if (!entries || entries.length === 0)
+      return { upserted: 0, modified: 0, total: 0 };
 
     const [movieGenres, tvGenres] = await Promise.all([
       this.fetchService.fetchGenres('tv'),
@@ -187,13 +244,21 @@ export class MediaService {
 
     try {
       const prepared = await Promise.all(preparedPromises);
-      await this.movieModel.bulkWrite(prepared);
-      console.log(`Successfuly added ${prepared.length} new media`);
+      const result = await this.movieModel.bulkWrite(prepared);
+      console.log(
+        `Seeded ${prepared.length} media (upserted: ${result.upsertedCount}, modified: ${result.modifiedCount})`,
+      );
+      return {
+        upserted: result.upsertedCount,
+        modified: result.modifiedCount,
+        total: prepared.length,
+      };
     } catch (error) {
       console.error(
         'Error writing new media to database:',
         (error as Error).message,
       );
+      return { upserted: 0, modified: 0, total: 0 };
     }
   }
 }

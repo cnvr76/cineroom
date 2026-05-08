@@ -19,7 +19,7 @@ const TrailerModal = () => {
       <div className="w-full h-full p-3 flex flex-col">
         <div className="w-full flex justify-end gap-5 pr-11">
           <div className="flex gap-2 items-center">
-            {data?.genres
+            {currentMedia?.genres
               .filter((g) => g != null)
               .map((g) => (
                 <div
