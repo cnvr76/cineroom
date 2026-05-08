@@ -1,4 +1,4 @@
-import { type HtmlConfig, getInset } from "./types/components.types";
+import { type HtmlConfig, getInset } from "../types/components.types";
 
 const ModalWindow = ({ children, placement }: HtmlConfig) => {
   return (

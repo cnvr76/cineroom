@@ -1,9 +1,9 @@
 import { useThree, useFrame, type RootState } from "@react-three/fiber";
-import useSceneLoader from "../hooks/useSceneLoader";
+import useSceneLoader from "../../hooks/useSceneLoader";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSceneActions, useSceneState } from "../contexts/SceneContext";
+import { useSceneActions, useSceneState } from "../../contexts/SceneContext";
 import * as THREE from "three";
-import { CONSTANTS, type SceneObjectKey } from "../config/sceneObjects";
+import { CONSTANTS, type SceneObjectKey } from "../../config/sceneObjects";
 
 // --- Raycast throttle: 30Hz max, only when pointer actually moved ---
 const RAYCAST_INTERVAL_MS = 33;

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useSceneActions, useSceneState } from "../contexts/SceneContext";
+import { useSceneActions, useSceneState } from "../../contexts/SceneContext";
 import * as THREE from "three";
 import { useTexture, useVideoTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CONSTANTS, IMG_BASE } from "../config/sceneObjects";
+import { CONSTANTS, IMG_BASE } from "../../config/sceneObjects";
 
 const PLAY_BUTTON_PATH = "/images/play-button.png";
 const BLACK = "#000000";

@@ -1,12 +1,16 @@
 // import { useState } from "react";
-import ModalWindow from "../ModalWindow";
+import ModalWindow from "../widgets/ModalWindow";
 import { MODALS } from "../../config/sceneObjects";
 import { useSceneAnimations, useSceneState } from "../../contexts/SceneContext";
+import useAsyncFetch from "../../hooks/useAsyncFetch";
+import { api } from "../../services/api";
 
 const TrailerModal = () => {
-  //   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { getResetCameraFn } = useSceneAnimations();
   const { currentMedia } = useSceneState(); // change to fetched media
+  const { data, isLoading, error } = useAsyncFetch(() =>
+    api.media.byId(currentMedia?._id!, currentMedia?.mediaType!),
+  );
 
   return (
     <ModalWindow
@@ -14,6 +18,21 @@ const TrailerModal = () => {
     >
       <div className="w-full h-full p-3 flex flex-col">
         <div className="w-full flex justify-end gap-5 pr-11">
+          <div className="flex gap-2 items-center">
+            {data?.genres
+              .filter((g) => g != null)
+              .map((g) => (
+                <div
+                  className="px-2.5 py-1 rounded-xl"
+                  style={{
+                    background: `color-mix(in srgb, ${currentMedia?.dominantColor} 40%, black)`,
+                  }}
+                >
+                  <span>{g}</span>
+                </div>
+              ))}
+          </div>
+
           <div className="h-full flex items-center gap-2 text-[1.1rem] font-bold">
             {currentMedia?.rating.toFixed(1) || "NR"}
             <i className="fa-solid fa-star fa-sm"></i>
@@ -27,15 +46,21 @@ const TrailerModal = () => {
           </button>
         </div>
 
-        <iframe
-          className="w-full flex-1 relative z-10 rounded-xl shadow-2xl bg-black"
-          src={`https://www.youtube.com/embed/${currentMedia?.trailerKey}?autoplay=1&rel=0&modestbranding=1`}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-        ></iframe>
+        {data?.trailerKey ? (
+          <iframe
+            className="w-full flex-1 relative z-10 rounded-xl shadow-2xl bg-black"
+            src={`https://www.youtube.com/embed/${data?.trailerKey}?autoplay=1&rel=0&modestbranding=1`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          ></iframe>
+        ) : (
+          <div className="bg-black w-full h-full flex items-center justify-center font-bold rounded-xl">
+            Trailer not yet available :/
+          </div>
+        )}
       </div>
     </ModalWindow>
   );

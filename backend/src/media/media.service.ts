@@ -84,9 +84,11 @@ export class MediaService {
         .fetchDetails(media.tmdbId, mediaType)
         .then((details) => {
           const videoList: ITmmdbVideo[] = details?.videos?.results || [];
-          const trailerKey: string | undefined = videoList.find(
-            (item) => item.type === 'Trailer',
-          )?.key;
+          const trailerKey =
+            videoList.find((v) => v.type === 'Trailer' && v.site === 'YouTube')
+              ?.key ??
+            videoList.find((v) => v.type === 'Teaser' && v.site === 'YouTube')
+              ?.key;
 
           if (trailerKey) {
             updates.trailerKey = trailerKey;
@@ -94,23 +96,31 @@ export class MediaService {
           }
         });
       promises.push(trailerPromise);
-      console.log(`Trailer fetching added for ${id}`);
+      console.log(
+        `Trailer fetching added for ${id} and mediaType: ${mediaType}`,
+      );
     }
 
     if (promises.length > 0) await Promise.all(promises);
 
-    if (Object.keys(updates).length > 0)
+    if (Object.keys(updates).length > 0) {
       await this.movieModel.findByIdAndUpdate(id, { $set: updates });
+    }
 
     return media;
   }
 
   private async getDominantColor(posterPath: string) {
-    const palette = await Vibrant.from(
-      await this.fetchService.fetchPoster(posterPath),
-    ).getPalette();
+    try {
+      const imageBuffer = await this.fetchService.fetchPoster(posterPath);
+      if (!imageBuffer) return DEFAULT_HEX;
 
-    return palette.Vibrant?.hex || DEFAULT_HEX;
+      const palette = await Vibrant.from(imageBuffer).getPalette();
+      return palette.Vibrant?.hex || DEFAULT_HEX;
+    } catch (error) {
+      console.error((error as Error).message);
+      return DEFAULT_HEX;
+    }
   }
 
   private async getNewData(page: number, mediaType: MediaType | 'all' = 'all') {
@@ -135,7 +145,7 @@ export class MediaService {
       this.fetchService.fetchGenres('movie'),
     ]);
 
-    const prepared = entries.map((entry) => {
+    const preparedPromises = entries.map(async (entry) => {
       const isMovie: boolean = entry.media_type === 'movie';
       const genres = isMovie ? movieGenres : tvGenres;
 
@@ -149,6 +159,10 @@ export class MediaService {
           : (entry as ITmdbTV).first_air_date,
       );
 
+      const dominantColor = entry.poster_path
+        ? await this.getDominantColor(entry.poster_path)
+        : DEFAULT_HEX;
+
       const document = {
         tmdbId: entry.id,
         mediaType: entry.media_type,
@@ -159,6 +173,7 @@ export class MediaService {
         rating: entry.vote_average,
         popularity: entry.popularity,
         releaseDate,
+        dominantColor,
       };
 
       return {
@@ -171,10 +186,14 @@ export class MediaService {
     });
 
     try {
+      const prepared = await Promise.all(preparedPromises);
       await this.movieModel.bulkWrite(prepared);
       console.log(`Successfuly added ${prepared.length} new media`);
     } catch (error) {
-      console.error('Error writing new media to database:', error.message);
+      console.error(
+        'Error writing new media to database:',
+        (error as Error).message,
+      );
     }
   }
 }

@@ -19,7 +19,7 @@ export class FetchService {
     this.BASE_POSTER_URL = this.configService.get<string>('BASE_POSTER_URL');
   }
 
-  async fetchPoster(posterPath: string, resolution: string = 'w500') {
+  async fetchPoster(posterPath: string, resolution: string = 'w92') {
     try {
       const { data } = await firstValueFrom(
         this.httpService.get(
@@ -29,8 +29,8 @@ export class FetchService {
       );
       return Buffer.from(data);
     } catch (error) {
-      console.error('Error fetching poster:', error.message);
-      return '';
+      console.error('Error fetching poster:', (error as Error).message);
+      return null;
     }
   }
 
@@ -45,7 +45,7 @@ export class FetchService {
     } catch (error) {
       console.error(
         'Error while attempting to fetch TMDB (details):',
-        error.message,
+        (error as Error).message,
       );
     }
   }
@@ -62,7 +62,7 @@ export class FetchService {
     } catch (error) {
       console.error(
         'Error while attempting to fetch TMDB (media):',
-        error.message,
+        (error as Error).message,
       );
     }
   }
@@ -81,7 +81,7 @@ export class FetchService {
     } catch (error) {
       console.error(
         'Error while attempting to fetch TMDB (genres):',
-        error.message,
+        (error as Error).message,
       );
       return {};
     }

@@ -1,8 +1,8 @@
 import { useFrame, type RootState } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
-import { CONSTANTS } from "../config/sceneObjects";
-import { useSceneActions, useSceneState } from "../contexts/SceneContext";
+import { CONSTANTS } from "../../config/sceneObjects";
+import { useSceneActions, useSceneState } from "../../contexts/SceneContext";
 
 const LightingSystem = () => {
   const { isAnyHovered, isAnySelected } = useSceneActions();

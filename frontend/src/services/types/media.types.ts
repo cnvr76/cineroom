@@ -1,10 +1,12 @@
+export type MediaType = "movie" | "tv";
+
 export interface IMediaBrief {
   _id: string;
   tmdbId: number;
   title: string;
   overview: string;
   posterPath: string;
-  mediaType: "movie" | "tv";
+  mediaType: MediaType;
   genres: string[];
   rating: number;
   popularity: number;

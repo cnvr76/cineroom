@@ -60,8 +60,8 @@ export class MediaController {
     throw new NotImplementedException();
   }
 
-  @Get('/search/:title')
-  async getSearched(@Param('title') title: string) {
+  @Get('/search')
+  async getSearched(@Query('q') query: string) {
     // TODO
     throw new NotImplementedException();
   }

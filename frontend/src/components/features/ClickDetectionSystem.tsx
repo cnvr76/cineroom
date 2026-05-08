@@ -3,10 +3,10 @@ import {
   useSceneActions,
   useSceneAnimations,
   useSceneState,
-} from "../contexts/SceneContext";
+} from "../../contexts/SceneContext";
 import { useThree } from "@react-three/fiber";
 import type { Object3D, Object3DEventMap } from "three";
-import type { SceneObjectKey } from "../config/sceneObjects";
+import type { SceneObjectKey } from "../../config/sceneObjects";
 
 const ClickDetectionSystem = ({
   sceneConfig,

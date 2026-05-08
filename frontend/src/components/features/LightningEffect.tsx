@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import * as THREE from "three";
 import { useFrame, type RootState } from "@react-three/fiber";
-import { CONSTANTS } from "../config/sceneObjects";
+import { CONSTANTS } from "../../config/sceneObjects";
 
 const LightningEffect = ({ position }: { position: THREE.Vector3Tuple }) => {
   const directionalLightRef = useRef<THREE.DirectionalLight>(null);

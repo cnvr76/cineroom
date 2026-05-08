@@ -1,8 +1,11 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import type { CameraConfig } from "../config/config.types";
+import type { CameraConfig } from "../../config/config.types";
 import { useCallback, useEffect, useRef } from "react";
 import * as THREE from "three";
-import { useSceneActions, useSceneAnimations } from "../contexts/SceneContext";
+import {
+  useSceneActions,
+  useSceneAnimations,
+} from "../../contexts/SceneContext";
 
 const CameraAnimationSystem = ({
   defaultConfig,

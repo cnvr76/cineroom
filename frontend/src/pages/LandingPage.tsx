@@ -4,14 +4,17 @@ import {
   CAMERA_CONFIG as cc,
   INTERACTABLE_OBJECTS,
 } from "../config/sceneObjects";
-import { CameraFixed, CameraSetup } from "../components/CameraComponents";
-import LightingSystem from "../components/LightingSystem";
+import {
+  CameraFixed,
+  CameraSetup,
+} from "../components/features/CameraComponents";
+import LightingSystem from "../components/features/LightingSystem";
 import LandingModal from "../components/landing/LandingModal";
-import SpotlightSystem from "../components/SpotlightSystem";
-import LightningEffect from "../components/LightningEffect";
-import ScreenMaterialSystem from "../components/ScreenMaterialSystem";
-import ClickDetectionSystem from "../components/ClickDetectionSystem";
-import CameraAnimationSystem from "../components/CameraAnimationSystem";
+import SpotlightSystem from "../components/features/SpotlightSystem";
+import LightningEffect from "../components/features/LightningEffect";
+import ScreenMaterialSystem from "../components/features/ScreenMaterialSystem";
+import ClickDetectionSystem from "../components/features/ClickDetectionSystem";
+import CameraAnimationSystem from "../components/features/CameraAnimationSystem";
 import { useSceneActions, useSceneAnimations } from "../contexts/SceneContext";
 import TrailerModal from "../components/shared/TrailerModal";
 
