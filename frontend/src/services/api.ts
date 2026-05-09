@@ -50,9 +50,9 @@ export const api = {
     search: (query: string) =>
       request<IMediaFull[]>(`/media/search?q=${encodeURIComponent(query)}`),
     markFavorite: (id: string) =>
-      request<{ success: boolean }>(`/media/${id}/save`, { method: "POST" }),
+      request<{ saved: boolean }>(`/media/${id}/save`, { method: "POST" }),
     unmarkFavorite: (id: string) =>
-      request<{ success: boolean }>(`/media/${id}/save`, { method: "DELETE" }),
+      request<{ saved: boolean }>(`/media/${id}/save`, { method: "DELETE" }),
   },
 
   auth: {

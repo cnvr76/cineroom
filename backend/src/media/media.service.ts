@@ -105,17 +105,31 @@ export class MediaService {
     mediaType: MediaType | 'all',
     page: number = 1,
     batch: number = 20,
+    userId?: string,
   ) {
     const filter: QueryFilter<Media> = {};
     filter.mediaType =
       mediaType === 'all' ? { $in: ['movie', 'tv'] } : mediaType;
 
-    return this.movieModel
+    const media = await this.movieModel
       .find(filter)
       .skip((page - 1) * batch)
       .sort({ releaseDate: -1 })
       .limit(batch)
       .lean();
+
+    let favorites = new Set<string>();
+    if (userId) {
+      const user = await this.userModel
+        .findById(userId)
+        .select('favorites')
+        .lean();
+      favorites = new Set((user?.favorites ?? []).map((id) => id.toString()));
+    }
+    return media.map((m) => ({
+      ...m,
+      isSaved: favorites.has(m._id.toString()),
+    }));
   }
 
   async getDetails(id: string, mediaType: MediaType) {

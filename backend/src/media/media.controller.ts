@@ -20,17 +20,25 @@ import {
 } from 'src/auth/decorators/current-user.decorator';
 import type { UpdateMediaDTO } from './dto/media.dto';
 import { AdminGuard } from 'src/auth/decorators/check-admin.decorator';
+import { OptionalAuthGuard } from 'src/auth/decorators/optional-user.decorator';
 
 @Controller('media')
 export class MediaController {
   constructor(private readonly moviesService: MediaService) {}
 
   @Get()
+  @UseGuards(OptionalAuthGuard)
   async getAll(
+    @CurrentUser() user: JwtUser | null,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('type') mediaType: MediaType | 'all' = 'all',
   ) {
-    return await this.moviesService.getPaginated(mediaType, page);
+    return await this.moviesService.getPaginated(
+      mediaType,
+      page,
+      20,
+      user?.userId,
+    );
   }
 
   @Patch('/:id')
