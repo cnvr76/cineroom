@@ -4,6 +4,6 @@ export interface AuthState {
   user?: IUser;
   isAdmin: boolean;
   isAuthenticated: boolean;
-  setUser: (user: IUser | undefined) => void;
+  setAccessToken: (access_token: string) => void;
   logout: () => void;
 }

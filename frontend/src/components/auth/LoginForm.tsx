@@ -7,11 +7,12 @@ import {
 } from "../../services/types/auth.types";
 import useAsyncCall from "../../hooks/useAsyncCall";
 import { api } from "../../services/api";
-import { authService } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { setAccessToken, isAdmin, isAuthenticated, user } = useAuthContext();
   const { execute, error, isLoading } = useAsyncCall<{
     access_token: string;
   }>();
@@ -27,8 +28,9 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginFormData) => {
     const result = await execute(() => api.auth.login(data));
     if (!result) return;
-    authService.saveToken(result.access_token);
-    navigate("/");
+    setAccessToken(result.access_token);
+    console.log(isAdmin, isAuthenticated, user);
+    // navigate("/");
   };
 
   return (
