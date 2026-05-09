@@ -4,6 +4,7 @@ import { MODALS } from "../../config/sceneObjects";
 import { useSceneAnimations, useSceneState } from "../../contexts/SceneContext";
 import useAsyncFetch from "../../hooks/useAsyncFetch";
 import { api } from "../../services/api";
+import ContentLoading from "../widgets/ContentLoading";
 
 const TrailerModal = () => {
   const { getResetCameraFn } = useSceneAnimations();
@@ -46,7 +47,11 @@ const TrailerModal = () => {
           </button>
         </div>
 
-        {data?.trailerKey ? (
+        {isLoading ? (
+          <div className="bg-black w-full h-full flex items-center justify-center font-bold rounded-xl">
+            <ContentLoading />
+          </div>
+        ) : data?.trailerKey ? (
           <iframe
             className="w-full flex-1 relative z-10 rounded-xl shadow-2xl bg-black"
             src={`https://www.youtube.com/embed/${data?.trailerKey}?autoplay=1&rel=0&modestbranding=1`}

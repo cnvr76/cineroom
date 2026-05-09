@@ -1,23 +1,44 @@
+import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import type { IMediaBrief, IMediaFull, MediaType } from "./types/media.types";
+import { authService } from "./authService";
+import type { IUser } from "./types/user.types";
+import type { LoginFormData, SignupFormData } from "./types/auth.types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
-const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-  });
+const apiClient = axios.create({
+  baseURL: API_BASE,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-  if (!res.ok) {
-    const message = await res.text().catch(() => res.statusText);
-    throw new Error(`HTTP ${res.status}: ${message || res.statusText}`);
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = authService.getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
+const request = async <T>(
+  path: string,
+  config?: AxiosRequestConfig,
+): Promise<T> => {
+  try {
+    const { data } = await apiClient.request<T>({ url: path, ...config });
+    return data;
+  } catch (error) {
+    const e = error as AxiosError<{ message?: string }>;
+    const status = e.response?.status ?? "??";
+    const message = e.response?.data?.message ?? e.message ?? "Request failed";
+    throw new Error(`HTTP ${status}: ${message}`);
   }
-
-  if (res.status === 204) return undefined as T;
-  return (await res.json()) as T;
 };
 
 export const api = {
@@ -28,7 +49,19 @@ export const api = {
       request<IMediaFull | undefined>(`/media/${mediaType}/${id}`),
     search: (query: string) =>
       request<IMediaFull[]>(`/media/search?q=${encodeURIComponent(query)}`),
-    toggleSave: (id: string) =>
-      request<IMediaBrief | undefined>(`/media/${id}/save`),
+    markFavorite: (id: string) =>
+      request<{ success: boolean }>(`/media/${id}/save`, { method: "POST" }),
+    unmarkFavorite: (id: string) =>
+      request<{ success: boolean }>(`/media/${id}/save`, { method: "DELETE" }),
+  },
+
+  auth: {
+    login: (data: LoginFormData) =>
+      request<{ access_token: string }>("/auth/login", {
+        method: "POST",
+        data,
+      }),
+    signup: (data: SignupFormData) =>
+      request<IUser>("/auth/signup", { method: "POST", data }),
   },
 };

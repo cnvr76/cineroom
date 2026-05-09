@@ -19,12 +19,15 @@
     "leva": "^0.10.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-hook-form": "^7.75.0",
     "react-router-dom": "^7.14.1",
     "tailwindcss": "^4.2.0",
-    "three": "^0.183.0"
+    "three": "^0.183.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@hookform/resolvers": "^5.2.2",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

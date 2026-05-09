@@ -2,6 +2,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import SceneProvider from "./contexts/SceneProvider";
 import LandingPage from "./pages/LandingPage";
 import { useSceneActions, useSceneState } from "./contexts/SceneContext";
+import AuthPage from "./pages/AuthPage";
 
 const DebugPanel = () => {
   const { currentSelected, currentHovered, currentHoveredMedia, currentMedia } =
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
       },
       {
         path: "auth",
-        element: null,
+        element: <AuthPage />,
       },
       {
         path: "profile",
