@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import type { IUser } from "../services/types/user.types";
 import { authService } from "../services/authService";
@@ -8,6 +8,13 @@ import { jwtDecode } from "jwt-decode";
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser | undefined>(undefined);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = authService.getToken();
+    if (token) {
+      setAccessToken(token);
+    }
+  }, []);
 
   const setAccessToken = (access_token: string) => {
     const decoded = jwtDecode<IUser>(access_token);

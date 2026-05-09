@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import ContentLoading from "../widgets/ContentLoading";
 import useAsyncCall from "../../hooks/useAsyncCall";
 import type { IMediaBrief, MediaType } from "../../services/types/media.types";
+import AccountIcon from "../widgets/AccountIcon";
 
 const BATCH_SIZE = 20;
 const FILTERS = ["All", "Movie", "TV"];
@@ -76,47 +77,50 @@ const LandingModal = () => {
   return (
     <ModalWindow placement={MODALS.landing}>
       <div className="flex flex-col gap-4">
-        <div className="w-full sticky top-0 z-50 flex flex-col justify-center gap-2">
+        <div className="w-full sticky top-0 z-50 flex flex-col justify-center gap-1">
           {/* Search bar */}
-          <form className="flex gap-1" onSubmit={handleSearch}>
-            <div className="relative w-full">
-              <input
-                type="text"
-                name="search"
-                id="search"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Try search for ..."
-                className="w-full py-1.5 pl-12 pr-10 bg-black/80 border border-white/10 rounded-full text-white placeholder-gray-400 backdrop-blur-md focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all duration-300"
-              />
-              {showClearButton && (
-                <button
-                  type="button"
-                  onClick={clearSearch}
-                  aria-label="Clear search"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors cursor-pointer"
-                >
-                  <i className="fa-solid fa-xmark"></i>
-                </button>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="bg-black/60 py-1 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10"
-            >
-              <i className="fa-solid fa-magnifying-glass text-white/60"></i>
-            </button>
-          </form>
+          <div className="flex gap-1 w-full">
+            <form className="flex gap-1 w-full" onSubmit={handleSearch}>
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  name="search"
+                  id="search"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Try search for ..."
+                  className="w-full py-1.5 pl-12 pr-10 bg-black/80 border border-white/10 rounded-full text-white placeholder-gray-400 backdrop-blur-md focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all duration-300"
+                />
+                {showClearButton && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    aria-label="Clear search"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                )}
+              </div>
+              <button
+                type="submit"
+                className="bg-black/60 py-1 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10"
+              >
+                <i className="fa-solid fa-magnifying-glass text-white/60"></i>
+              </button>
+            </form>
+            <AccountIcon />
+          </div>
 
           {/* Filter media by type */}
-          <div className="flex gap-2 items-center w-full justify-evenly bg-black/80 border border-white/10 rounded-full">
+          <div className="flex gap-1 items-center w-full justify-evenly bg-black/80 border border-white/10 rounded-full">
             {FILTERS.map((f) => (
               <button
                 disabled={isLoading || mediaType === f.toLocaleLowerCase()}
                 key={f}
                 onClick={() =>
                   setSearchParams((prev) => {
-                    prev.set("mediaType", f.toLowerCase());
+                    prev.set("mediaType", f.toLocaleLowerCase());
                     prev.set("page", "1");
                     return prev;
                   })

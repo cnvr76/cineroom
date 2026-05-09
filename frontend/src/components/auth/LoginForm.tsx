@@ -12,7 +12,7 @@ import { useAuthContext } from "../../contexts/AuthContext";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { setAccessToken, isAdmin, isAuthenticated, user } = useAuthContext();
+  const { setAccessToken } = useAuthContext();
   const { execute, error, isLoading } = useAsyncCall<{
     access_token: string;
   }>();
@@ -29,8 +29,7 @@ const LoginForm = () => {
     const result = await execute(() => api.auth.login(data));
     if (!result) return;
     setAccessToken(result.access_token);
-    console.log(isAdmin, isAuthenticated, user);
-    // navigate("/");
+    navigate("/");
   };
 
   return (
