@@ -18,25 +18,25 @@ const TrailerModal = () => {
     <ModalWindow
       placement={{ ...MODALS.trailer, background: currentMedia?.dominantColor }}
     >
-      <div className="w-full h-full p-3 flex flex-col">
+      <div className="w-full h-full flex flex-col p-2 pt-0">
         <div className="flex justify-between">
-          <div className="min-w-fit flex items-center gap-5 pl-11">
+          <div className="min-w-fit flex items-center gap-2 pl-11">
             <SaveButton
               id={currentMedia?._id!}
               isSaved={currentMedia?.isSaved || false}
             />
-            <span className="font-bold text-xl">{currentMedia?.title}</span>
-          </div>
+            <span className="font-bold text-xl underline mx-2">
+              {currentMedia?.title}
+            </span>
 
-          <div className="w-full flex justify-end gap-5 pr-11">
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center p-1">
               {currentMedia?.genres
                 .filter((g) => g != null)
                 .map((g) => (
                   <div
-                    className="px-2.5 py-1 rounded-xl"
+                    className="px-2.5 py-1 rounded-xl font-bold"
                     style={{
-                      background: `color-mix(in srgb, ${currentMedia?.dominantColor} 40%, black)`,
+                      background: `color-mix(in srgb, ${currentMedia?.dominantColor} 90%, black)`,
                     }}
                   >
                     <span>{g}</span>
@@ -48,13 +48,17 @@ const TrailerModal = () => {
               {currentMedia?.rating.toFixed(1) || "NR"}
               <i className="fa-solid fa-star fa-sm"></i>
             </div>
+          </div>
 
-            <button
-              onClick={getResetCameraFn()}
-              className="px-8 pt-3 pb-6 -mb-4 bg-black text-white font-bold rounded-t-2xl transition-transform duration-300 relative z-0 hover:-translate-y-1.5 cursor-pointer"
-            >
-              Back
-            </button>
+          <div className="p-2 flex">
+            <div className="w-full flex justify-end gap-1 pr-11">
+              <button
+                onClick={getResetCameraFn()}
+                className="bg-black text-white font-bold rounded-full px-6 py-2 cursor-pointer hover:scale-110 transition-all ease-in-out"
+              >
+                <i className="fa-solid fa-arrow-left rotate-45"></i> Back
+              </button>
+            </div>
           </div>
         </div>
 
