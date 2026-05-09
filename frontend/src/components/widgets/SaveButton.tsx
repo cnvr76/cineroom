@@ -21,7 +21,7 @@ const SaveButton = ({ id, isSaved }: { id: string; isSaved: boolean }) => {
 
   return (
     <span
-      className="hover:scale-110 transition-all ease-in-out"
+      className="hover:scale-110 transition-all ease-in-out cursor-pointer"
       onClick={handleSave}
     >
       <i

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Media, DEFAULT_HEX } from './schemas/media.schema';
-import { Model, QueryFilter } from 'mongoose';
+import { Model, QueryFilter, Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import type {
   ITmdbMovie,
@@ -132,9 +132,15 @@ export class MediaService {
     }));
   }
 
-  async getDetails(id: string, mediaType: MediaType) {
+  async getDetails(id: string, mediaType: MediaType, userId?: string) {
     const media = await this.movieModel.findById(id).lean();
     if (!media) return {};
+
+    let isSaved = false;
+    if (userId) {
+      const user = await this.userModel.findById(userId).select('favorites');
+      isSaved = (user?.favorites ?? []).some((f) => f.equals(id));
+    }
 
     const promises: Promise<void>[] = [];
     const updates: Record<string, any> = {};
@@ -177,7 +183,7 @@ export class MediaService {
       await this.movieModel.findByIdAndUpdate(id, { $set: updates });
     }
 
-    return media;
+    return { ...media, isSaved };
   }
 
   private async getDominantColor(posterPath: string) {

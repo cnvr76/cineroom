@@ -94,10 +94,12 @@ export class MediaController {
   }
 
   @Get('/:type/:id')
+  @UseGuards(OptionalAuthGuard)
   async getSpecific(
+    @CurrentUser() user: JwtUser | null,
     @Param('type') mediaType: MediaType,
     @Param('id') id: string,
   ) {
-    return await this.moviesService.getDetails(id, mediaType);
+    return await this.moviesService.getDetails(id, mediaType, user?.userId);
   }
 }
