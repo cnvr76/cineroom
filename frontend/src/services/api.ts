@@ -44,7 +44,7 @@ const request = async <T>(
 export const api = {
   media: {
     list: (page: number = 1, mediaType: MediaType | "all" = "all") =>
-      request<IMediaBrief[]>(`/media?page=${page}&mediaType=${mediaType}`),
+      request<IMediaBrief[]>(`/media?page=${page}&type=${mediaType}`),
     byId: (id: string, mediaType: MediaType) =>
       request<IMediaFull | undefined>(`/media/${mediaType}/${id}`),
     search: (query: string) =>

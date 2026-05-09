@@ -8,9 +8,10 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ContentLoading from "../widgets/ContentLoading";
 import useAsyncCall from "../../hooks/useAsyncCall";
-import type { IMediaBrief } from "../../services/types/media.types";
+import type { IMediaBrief, MediaType } from "../../services/types/media.types";
 
 const BATCH_SIZE = 20;
+const FILTERS = ["All", "Movie", "TV"];
 
 const LandingModal = () => {
   const { registerMedia, unregisterAllMedia } = useSceneActions();
@@ -19,12 +20,18 @@ const LandingModal = () => {
   const [inputValue, setInputValue] = useState("");
 
   const currentPage = Number(searchParams.get("page")) || 1;
+  const mediaType = (searchParams.get("mediaType") || "all") as
+    | MediaType
+    | "all";
 
   const {
     data,
     isLoading,
     error: fetchError,
-  } = useAsyncFetch(() => api.media.list(currentPage, "all"), [currentPage]);
+  } = useAsyncFetch(
+    () => api.media.list(currentPage, mediaType),
+    [currentPage, mediaType],
+  );
   const {
     data: found,
     execute,
@@ -69,7 +76,8 @@ const LandingModal = () => {
   return (
     <ModalWindow placement={MODALS.landing}>
       <div className="flex flex-col gap-4">
-        <div className="w-full sticky top-0 z-50">
+        <div className="w-full sticky top-0 z-50 flex flex-col justify-center gap-2">
+          {/* Search bar */}
           <form className="flex gap-1" onSubmit={handleSearch}>
             <div className="relative w-full">
               <input
@@ -99,6 +107,30 @@ const LandingModal = () => {
               <i className="fa-solid fa-magnifying-glass text-white/60"></i>
             </button>
           </form>
+
+          {/* Filter media by type */}
+          <div className="flex gap-2 items-center w-full justify-evenly bg-black/80 border border-white/10 rounded-full">
+            {FILTERS.map((f) => (
+              <button
+                disabled={isLoading || mediaType === f.toLocaleLowerCase()}
+                key={f}
+                onClick={() =>
+                  setSearchParams((prev) => {
+                    prev.set("mediaType", f.toLowerCase());
+                    prev.set("page", "1");
+                    return prev;
+                  })
+                }
+                className={`rounded-full px-3 py-1 w-full text-center cursor-pointer transition-colors ${
+                  mediaType === f.toLowerCase()
+                    ? "bg-white text-black font-medium"
+                    : "bg-transparent text-white hover:bg-white/10"
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
 
         {(fetchError || searchError) && (
