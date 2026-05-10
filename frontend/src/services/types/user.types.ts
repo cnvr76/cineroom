@@ -7,6 +7,7 @@ export interface IUser {
   username: string;
   email: string;
   role: RolesType;
+  avatarUrl?: string;
 }
 
 export interface IUserFull extends IUser {

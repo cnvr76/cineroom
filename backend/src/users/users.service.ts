@@ -16,6 +16,7 @@ export class UsersService {
     return {
       id: u._id.toString(),
       username: u.username,
+      avatarUrl: u.avatarUrl,
       email: u.email,
       role: u.role,
     };
@@ -46,6 +47,7 @@ export class UsersService {
       moviesCount,
       tvCount,
       joinedAt: (user as any).createdAt?.toISOString() ?? '',
+      avatarUrl: user.avatarUrl,
     };
   }
 
@@ -55,11 +57,21 @@ export class UsersService {
     return full ? this.buildFullUser(user) : this.toPublic(user);
   }
 
+  async setAvatar(userId: string, avatarUrl: string) {
+    const updated = await this.userModel.findByIdAndUpdate(
+      userId,
+      { $set: { avatarUrl } },
+      { returnDocument: 'after' },
+    );
+    if (!updated) throw new NotFoundException(`User ${userId} not found`);
+    return this.buildFullUser(updated);
+  }
+
   async updateUser(userId: string, data: UpdateUserDTO) {
     const updated = await this.userModel.findByIdAndUpdate(
       userId,
       { $set: data },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
     if (!updated)
       throw new NotFoundException(`User with id ${userId} not found`);

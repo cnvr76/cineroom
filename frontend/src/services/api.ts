@@ -85,6 +85,17 @@ export const api = {
     me: () => request<IUserFull>("/users/me"),
     updateMe: (data: ChangeMeFormData) =>
       request<IUserFull>("/users/me", { method: "PATCH", data }),
+    uploadAvatar: (file: File) => {
+      const formData = new FormData();
+      formData.append("avatar", file);
+      return request<IUserFull>("/users/me/avatar", {
+        method: "POST",
+        data: formData,
+        headers: {
+          "Content-Type": undefined as any,
+        },
+      });
+    },
     updateUser: (userId: string, data: ChangeUserFormData) =>
       request<IUserFull>(`/users/${userId}`, { method: "PATCH", data }),
   },

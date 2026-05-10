@@ -13,6 +13,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ContentLoading from "../components/widgets/ContentLoading";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { logout, isAdmin } = useAuthContext();
@@ -180,8 +182,33 @@ const ProfilePage = () => {
 
         {/* Right: avatar + stats */}
         <div className="bg-white/5 p-12 flex flex-col items-center justify-center gap-6 backdrop-blur-sm">
-          <div className="w-32 h-32 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-5xl text-white/50">
-            <i className="fa-solid fa-user"></i>
+          <div className="relative w-32 h-32">
+            {data.avatarUrl ? (
+              <img
+                src={`${BASE_URL}${data.avatarUrl}`}
+                alt="Avatar"
+                className="w-full h-full rounded-full object-cover border border-white/20"
+              />
+            ) : (
+              <div className="w-full h-full rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-5xl text-white/50">
+                <i className="fa-solid fa-user"></i>
+              </div>
+            )}
+
+            <label className="absolute bottom-0 right-0 bg-black/80 hover:bg-black w-9 h-9 rounded-full flex items-center justify-center cursor-pointer border border-white/20">
+              <i className="fa-solid fa-camera text-white text-xs"></i>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  await execute(() => api.user.uploadAvatar(file));
+                  refetch();
+                }}
+              />
+            </label>
           </div>
 
           <div className="text-center">

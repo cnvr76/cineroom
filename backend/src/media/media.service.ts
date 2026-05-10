@@ -28,7 +28,7 @@ export class MediaService {
     const media = await this.movieModel.findByIdAndUpdate(
       mediaId,
       { $set: data },
-      { new: true },
+      { returnDocument: 'after' },
     );
     if (!media) throw new NotFoundException(`Media ${mediaId} not found`);
     return media;
