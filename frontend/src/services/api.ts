@@ -81,11 +81,37 @@ export const api = {
   },
 
   user: {
-    list: () => request<IUserFull[]>("/users"),
+    list: () => request<IUser[]>("/users"),
     me: () => request<IUserFull>("/users/me"),
     updateMe: (data: ChangeMeFormData) =>
       request<IUserFull>("/users/me", { method: "PATCH", data }),
     updateUser: (userId: string, data: ChangeUserFormData) =>
       request<IUserFull>(`/users/${userId}`, { method: "PATCH", data }),
+  },
+
+  admin: {
+    stats: () =>
+      request<{
+        users: number;
+        totalMedia: number;
+        movies: number;
+        tv: number;
+      }>("/users/admin/stats"),
+    users: {
+      search: (query: string) =>
+        request<IUser[]>(`/users/admin/search?q=${encodeURIComponent(query)}`),
+      delete: (userId: string) =>
+        request<{ deleted: boolean }>(`/users/${userId}`, { method: "DELETE" }),
+    },
+    media: {
+      search: (query: string) =>
+        request<IMediaBrief[]>(
+          `/media/admin/search?q=${encodeURIComponent(query)}`,
+        ),
+      delete: (mediaId: string) =>
+        request<{ deleted: boolean }>(`/media/${mediaId}`, {
+          method: "DELETE",
+        }),
+    },
   },
 };

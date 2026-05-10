@@ -30,8 +30,8 @@ export const CAMERA_CONFIG = {
   },
   favorite: {
     target: {
-      position: [0.4, -0.14, -0.15],
-      target: [-0.02, -0.08, -0.74],
+      position: [0.24, 0.52, -0.13],
+      target: [0.01, 0.26, -0.49],
       animationSpeed: 2,
       changeSpeed: 2,
     },

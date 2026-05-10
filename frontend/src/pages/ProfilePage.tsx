@@ -70,12 +70,22 @@ const ProfilePage = () => {
         {/* Left: editable form */}
         <div className="bg-black/20 backdrop-blur-md p-12 flex flex-col gap-6 text-white">
           <div className="flex justify-between items-center">
-            <button
-              className="font-bold text-md cursor-pointer"
-              onClick={() => navigate("/")}
-            >
-              CINEROOM
-            </button>
+            <div className="flex gap-6">
+              <button
+                className="font-bold text-md cursor-pointer"
+                onClick={() => navigate("/")}
+              >
+                CINEROOM
+              </button>
+              {isAdmin && (
+                <button
+                  className="font-bold text-md cursor-pointer"
+                  onClick={() => navigate("/admin")}
+                >
+                  Admin Dashboard
+                </button>
+              )}
+            </div>
             <button
               type="button"
               onClick={() => navigate("/")}

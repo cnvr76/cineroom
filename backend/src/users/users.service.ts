@@ -65,4 +65,40 @@ export class UsersService {
       throw new NotFoundException(`User with id ${userId} not found`);
     return this.buildFullUser(updated);
   }
+
+  async searchUsers(query: string, limit: number = 20) {
+    const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safe = escapeRegex(query);
+    const users = await this.userModel
+      .find({
+        $or: [
+          { username: { $regex: safe, $options: 'i' } },
+          { email: { $regex: safe, $options: 'i' } },
+        ],
+      })
+      .limit(limit)
+      .lean();
+    return users.map((u) => this.toPublic(u as unknown as UserDocument));
+  }
+
+  async deleteUser(userId: string) {
+    const deleted = await this.userModel.findByIdAndDelete(userId);
+    if (!deleted)
+      throw new NotFoundException(`User with id ${userId} not found`);
+    return { deleted: true };
+  }
+
+  async getAdminStats() {
+    const [users, movies, tv] = await Promise.all([
+      this.userModel.countDocuments(),
+      this.movieModel.countDocuments({ mediaType: 'movie' }),
+      this.movieModel.countDocuments({ mediaType: 'tv' }),
+    ]);
+    return {
+      users,
+      totalMedia: movies + tv,
+      movies,
+      tv,
+    };
+  }
 }

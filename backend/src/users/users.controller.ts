@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminGuard } from 'src/auth/decorators/check-admin.decorator';
@@ -24,6 +33,18 @@ export class UsersController {
     return await this.userService.getById(user.userId, true);
   }
 
+  @Get('/admin/stats')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async getAdminStats() {
+    return await this.userService.getAdminStats();
+  }
+
+  @Get('/admin/search')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async getSearched(@Query('q') query: string) {
+    return await this.userService.searchUsers(query);
+  }
+
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'), AdminGuard)
   async getUser(@Param('id') id: string) {
@@ -40,5 +61,11 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'), AdminGuard)
   async updateUser(@Param('id') id: string, @Body() data: UpdateUserDTO) {
     return await this.userService.updateUser(id, data);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async deleteUser(@Param('id') id: string) {
+    return await this.userService.deleteUser(id);
   }
 }

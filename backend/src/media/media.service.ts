@@ -78,14 +78,16 @@ export class MediaService {
     return [...favorites].map((f) => ({ ...f, isSaved: true }));
   }
 
-  async searchFor(query: string, save: boolean = true) {
+  async dbSearch(query: string, limit: number = 20) {
     const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const safe = escapeRegex(query);
-    const dbMatches = await this.movieModel
-      .find({ title: { $regex: safe, $options: 'i' } })
-      .limit(20)
+    return this.movieModel
+      .find({ title: { $regex: escapeRegex(query), $options: 'i' } })
+      .limit(limit)
       .lean();
+  }
 
+  async searchFor(query: string, save: boolean = true) {
+    const dbMatches = await this.dbSearch(query);
     if (dbMatches.length > 0) return dbMatches;
 
     const tmdbResponse = await this.fetchService.fetchSearch(query);
@@ -101,6 +103,13 @@ export class MediaService {
         tmdbId: { $in: tmbdMatches.map((res) => res.id) },
       })
       .lean();
+  }
+
+  async deleteMedia(mediaId: string) {
+    const deleted = await this.movieModel.findByIdAndDelete(mediaId);
+    if (!deleted) throw new NotFoundException(`Media ${mediaId} not found`);
+    await this.userModel.updateMany({}, { $pull: { favorites: mediaId } });
+    return { deleted: true };
   }
 
   async searchFavoritesFor(query: string, userId: string) {

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import type { IUser } from "../services/types/user.types";
 import { authService } from "../services/authService";
@@ -6,15 +6,20 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<IUser | undefined>(undefined);
-  const navigate = useNavigate();
-
-  useEffect(() => {
+  // Декодируем токен синхронно при инициализации стейта — без этого первый
+  // рендер выдаёт user=undefined и гард админки/профиля редиректит до того,
+  // как токен успеет распарситься в useEffect.
+  const [user, setUser] = useState<IUser | undefined>(() => {
     const token = authService.getToken();
-    if (token) {
-      setAccessToken(token);
+    if (!token) return undefined;
+    try {
+      return jwtDecode<IUser>(token);
+    } catch {
+      authService.removeToken();
+      return undefined;
     }
-  }, []);
+  });
+  const navigate = useNavigate();
 
   const setAccessToken = (access_token: string) => {
     const decoded = jwtDecode<IUser>(access_token);
@@ -32,8 +37,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
-        isAdmin: Boolean(user?.role === "admin"),
-        isAuthenticated: Boolean(authService.getToken()),
+        isAdmin: user?.role === "admin",
+        isAuthenticated: !!user,
         setAccessToken,
         logout,
       }}

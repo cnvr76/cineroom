@@ -102,6 +102,18 @@ export class MediaController {
     return await this.moviesService.searchFavoritesFor(query, user.userId);
   }
 
+  @Get('/admin/search')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async getSearchedAdmin(@Query('q') query: string) {
+    return await this.moviesService.dbSearch(query);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async deleteMedia(@Param('id') id: string) {
+    return await this.moviesService.deleteMedia(id);
+  }
+
   @Get('/:type/:id')
   @UseGuards(OptionalAuthGuard)
   async getSpecific(

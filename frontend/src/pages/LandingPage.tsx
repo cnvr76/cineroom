@@ -18,8 +18,24 @@ import CameraAnimationSystem from "../components/features/CameraAnimationSystem"
 import { useSceneActions, useSceneAnimations } from "../contexts/SceneContext";
 import TrailerModal from "../components/shared/TrailerModal";
 import FavoriteModal from "../components/favorite/FavoriteModal";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import MobileNotSupported from "./MobileNotSupported";
+
+const DESKTOP_BREAKPOINT = 1024;
+
+const useDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(
+    () => window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`).matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`);
+    const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isDesktop;
+};
 
 const LandingUI = () => {
   const [searchParams] = useSearchParams();
@@ -48,8 +64,12 @@ const LandingUI = () => {
 };
 
 const LandingPage = () => {
+  const isDesktop = useDesktop();
+
+  if (!isDesktop) return <MobileNotSupported />;
+
   return (
-    <div className="w-screen h-screen">
+    <div className="fixed inset-0 overflow-hidden">
       <Canvas
         camera={{ fov: 50 }}
         dpr={[1, 1.5]}

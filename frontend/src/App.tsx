@@ -5,6 +5,7 @@ import { useSceneActions, useSceneState } from "./contexts/SceneContext";
 import AuthPage from "./pages/AuthPage";
 import AuthProvider from "./contexts/AuthProvider";
 import ProfilePage from "./pages/ProfilePage";
+import AdminPage from "./pages/AdminPage";
 
 const DebugPanel = () => {
   const { currentSelected, currentHovered, currentHoveredMedia, currentMedia } =
@@ -52,15 +53,11 @@ const router = createBrowserRouter([
             path: "me",
             element: <ProfilePage />,
           },
-          {
-            path: "admin",
-            element: null,
-          },
         ],
       },
       {
         path: "admin",
-        element: null,
+        element: <AdminPage />,
       },
     ],
   },
