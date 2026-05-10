@@ -53,6 +53,16 @@ export const api = {
       request<{ saved: boolean }>(`/media/${id}/save`, { method: "POST" }),
     unmarkFavorite: (id: string) =>
       request<{ saved: boolean }>(`/media/${id}/save`, { method: "DELETE" }),
+    favorites: {
+      list: (page: number = 1, mediaType: MediaType | "all" = "all") =>
+        request<IMediaBrief[]>(
+          `/media/me/favorites?page=${page}&type=${mediaType}`,
+        ),
+      search: (query: string) =>
+        request<IMediaFull[]>(
+          `/media/me/favorites/search?q=${encodeURIComponent(query)}`,
+        ),
+    },
   },
 
   auth: {

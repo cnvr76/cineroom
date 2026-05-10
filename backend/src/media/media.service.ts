@@ -68,15 +68,17 @@ export class MediaService {
     const filter: QueryFilter<Media> = { _id: { $in: user.favorites } };
     if (mediaType !== 'all') filter.mediaType = mediaType;
 
-    return await this.movieModel
+    const favorites = await this.movieModel
       .find(filter)
       .skip((page - 1) * batch)
       .sort({ releaseDate: -1 })
       .limit(batch)
       .lean();
+
+    return [...favorites].map((f) => ({ ...f, isSaved: true }));
   }
 
-  async searchFor(query: string) {
+  async searchFor(query: string, save: boolean = true) {
     const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const safe = escapeRegex(query);
     const dbMatches = await this.movieModel
@@ -93,12 +95,30 @@ export class MediaService {
     );
 
     if (tmbdMatches.length === 0) return [];
-    await this.saveNewMedia(tmbdMatches);
+    if (save) await this.saveNewMedia(tmbdMatches);
     return this.movieModel
       .find({
         tmdbId: { $in: tmbdMatches.map((res) => res.id) },
       })
       .lean();
+  }
+
+  async searchFavoritesFor(query: string, userId: string) {
+    const user = await this.userModel
+      .findById(userId)
+      .select('favorites')
+      .lean();
+    if (!user) throw new NotFoundException('User not found');
+
+    const favoritesSet = new Set<string>(
+      (user?.favorites ?? []).map((id) => id.toString()),
+    );
+
+    const allFound = await this.searchFor(query, false);
+
+    return allFound
+      .filter((m) => favoritesSet.has(m._id.toString()))
+      .map((m) => ({ ...m, isSaved: true }));
   }
 
   async getPaginated(

@@ -6,7 +6,7 @@ const AccountIcon = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center relative">
+    <div className="flex items-center relative gap-1">
       <button
         className="relative bg-black/60 py-1.5 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10"
         onClick={

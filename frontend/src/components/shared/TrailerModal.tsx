@@ -1,18 +1,34 @@
 // import { useState } from "react";
 import ModalWindow from "../widgets/ModalWindow";
 import { MODALS } from "../../config/sceneObjects";
-import { useSceneAnimations, useSceneState } from "../../contexts/SceneContext";
+import {
+  useSceneActions,
+  useSceneAnimations,
+  useSceneState,
+} from "../../contexts/SceneContext";
 import useAsyncFetch from "../../hooks/useAsyncFetch";
 import { api } from "../../services/api";
 import ContentLoading from "../widgets/ContentLoading";
 import SaveButton from "../widgets/SaveButton";
+import { useSearchParams } from "react-router-dom";
+import { CAMERA_CONFIG as cc } from "../../config/sceneObjects";
 
 const TrailerModal = () => {
-  const { getResetCameraFn } = useSceneAnimations();
+  const [searchParams] = useSearchParams();
+  const { getMoveCameraToFn } = useSceneAnimations();
   const { currentMedia } = useSceneState();
+  const { deselectObject } = useSceneActions();
   const { data, isLoading } = useAsyncFetch(() =>
     api.media.byId(currentMedia?._id!, currentMedia?.mediaType!),
   );
+
+  const goBack = () => {
+    const isFromFavorites = searchParams.get("favorites") === "true";
+    deselectObject();
+    getMoveCameraToFn()(
+      isFromFavorites ? cc.favorite.target : cc.landing.default,
+    );
+  };
 
   return (
     <ModalWindow
@@ -53,7 +69,7 @@ const TrailerModal = () => {
           <div className="p-2 flex">
             <div className="w-full flex justify-end gap-1 pr-11">
               <button
-                onClick={getResetCameraFn()}
+                onClick={goBack}
                 className="bg-black text-white font-bold rounded-full px-6 py-2 cursor-pointer hover:scale-110 transition-all ease-in-out"
               >
                 <i className="fa-solid fa-arrow-left rotate-45"></i> Back

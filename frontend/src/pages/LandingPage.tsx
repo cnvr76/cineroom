@@ -38,13 +38,11 @@ const LandingUI = () => {
     }
   }, [isFavoriteView, isCameraReady]);
 
-  if (isFavoriteView) {
-    // return !isAnimating ? <FavoriteModal /> : null;
-    return <FavoriteModal />;
-  }
   if (isSelected("tv")) {
     return !isAnimating ? <TrailerModal /> : null;
-    // return <TrailerModal />;
+  }
+  if (isFavoriteView) {
+    return <FavoriteModal />;
   }
   return <LandingModal />;
 };

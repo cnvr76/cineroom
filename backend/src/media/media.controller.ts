@@ -93,6 +93,15 @@ export class MediaController {
     return await this.moviesService.searchFor(query);
   }
 
+  @Get('/me/favorites/search')
+  @UseGuards(AuthGuard('jwt'))
+  async getSearchedFavorites(
+    @CurrentUser() user: JwtUser,
+    @Query('q') query: string,
+  ) {
+    return await this.moviesService.searchFavoritesFor(query, user.userId);
+  }
+
   @Get('/:type/:id')
   @UseGuards(OptionalAuthGuard)
   async getSpecific(
