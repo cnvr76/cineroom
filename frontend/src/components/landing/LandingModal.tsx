@@ -7,9 +7,9 @@ import { api } from "../../services/api";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ContentLoading from "../widgets/ContentLoading";
-import useAsyncCall from "../../hooks/useAsyncCall";
 import type { IMediaBrief, MediaType } from "../../services/types/media.types";
 import AccountIcon from "../widgets/AccountIcon";
+import SearchBar, { type SearchState } from "../widgets/SearchBar";
 
 const BATCH_SIZE = 20;
 const FILTERS = ["All", "Movie", "TV"];
@@ -17,8 +17,12 @@ const FILTERS = ["All", "Movie", "TV"];
 const LandingModal = () => {
   const { registerMedia, unregisterAllMedia } = useSceneActions();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [submittedQuery, setSubmittedQuery] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const [searchState, setSearchState] = useState<SearchState<IMediaBrief>>({
+    results: undefined,
+    isSearching: false,
+    isActive: false,
+    error: undefined,
+  });
 
   const currentPage = Number(searchParams.get("page")) || 1;
   const mediaType = (searchParams.get("mediaType") || "all") as
@@ -41,19 +45,12 @@ const LandingModal = () => {
     () => api.media.list(currentPage, mediaType),
     [currentPage, mediaType],
   );
-  const {
-    data: found,
-    execute,
-    isLoading: isSearching,
-    error: searchError,
-  } = useAsyncCall<IMediaBrief[]>();
 
-  const isSearchActive = submittedQuery.length > 0;
-  const mediaToShow = isSearchActive ? found : data;
+  const mediaToShow = searchState.isActive ? searchState.results : data;
 
-  const isPending = isLoading || isSearching;
-  const isEmpty = isSearchActive && !isPending && found?.length === 0;
-  const showClearButton = inputValue.length > 0 || isSearchActive;
+  const isPending = isLoading || searchState.isSearching;
+  const isEmpty =
+    searchState.isActive && !isPending && searchState.results?.length === 0;
   const isLastPage = data?.length !== BATCH_SIZE;
 
   const handlePage = (dir: 1 | -1) => {
@@ -62,18 +59,6 @@ const LandingModal = () => {
       prev.set("page", next.toString());
       return prev;
     });
-  };
-
-  const handleSearch = (e: any) => {
-    e.preventDefault();
-    const q = inputValue.trim();
-    if (!q) return;
-    setSubmittedQuery(q);
-    execute(() => api.media.search(q));
-  };
-  const clearSearch = () => {
-    setSubmittedQuery("");
-    setInputValue("");
   };
 
   useEffect(() => {
@@ -98,35 +83,9 @@ const LandingModal = () => {
             </button>
 
             {/* Search bar */}
-            <form className="flex gap-1 w-full" onSubmit={handleSearch}>
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  name="search"
-                  id="search"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Try search for ..."
-                  className="w-full py-1.5 pl-12 pr-10 bg-black/80 border border-white/10 rounded-full text-white placeholder-gray-400 backdrop-blur-md focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all duration-300"
-                />
-                {showClearButton && (
-                  <button
-                    type="button"
-                    onClick={clearSearch}
-                    aria-label="Clear search"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <i className="fa-solid fa-xmark"></i>
-                  </button>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="bg-black/60 py-1 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10"
-              >
-                <i className="fa-solid fa-magnifying-glass text-white/60"></i>
-              </button>
-            </form>
+            <SearchBar onChange={setSearchState} searchFn={api.media.search} />
+
+            {/* Account Icon Functions */}
             <AccountIcon />
           </div>
 
@@ -155,8 +114,8 @@ const LandingModal = () => {
           </div>
         </div>
 
-        {(fetchError || searchError) && (
-          <div>Error: {fetchError?.message || searchError?.message}</div>
+        {(fetchError || searchState.error) && (
+          <div>Error: {fetchError?.message || searchState.error?.message}</div>
         )}
 
         {isPending && <ContentLoading />}
@@ -174,7 +133,7 @@ const LandingModal = () => {
                 <MediaCard data={m} key={m._id} />
               ))}
               <div className="flex flex-col justify-evenly items-center">
-                {!isSearchActive && !isLastPage && (
+                {!searchState.isActive && !isLastPage && (
                   <button
                     className="bg-black w-14 h-14 flex items-center justify-center rounded-full text-white transition hover:scale-110 cursor-pointer"
                     onClick={() => handlePage(1)}
@@ -191,11 +150,11 @@ const LandingModal = () => {
                   </button>
                 )}
 
-                {!isSearchActive && (
+                {!searchState.isActive && (
                   <span className="font-bold">Page {currentPage}</span>
                 )}
 
-                {!isSearchActive && currentPage > 1 && (
+                {!searchState.isActive && currentPage > 1 && (
                   <button
                     className="bg-black w-14 h-14 flex items-center justify-center rounded-full text-white transition hover:scale-110 cursor-pointer"
                     onClick={() => handlePage(-1)}

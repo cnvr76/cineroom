@@ -28,7 +28,6 @@ const FavoriteModal = () => {
           </button>
         </div>
 
-        {/* Содержимое допишешь сам — список избранных, грид MediaCard и т.д. */}
         <div className="flex-1 flex items-center justify-center text-white/40">
           Your favorites will appear here.
         </div>

@@ -43,8 +43,8 @@ const LandingUI = () => {
     return <FavoriteModal />;
   }
   if (isSelected("tv")) {
-    // return !isAnimating ? <TrailerModal /> : null;
-    return <TrailerModal />;
+    return !isAnimating ? <TrailerModal /> : null;
+    // return <TrailerModal />;
   }
   return <LandingModal />;
 };
