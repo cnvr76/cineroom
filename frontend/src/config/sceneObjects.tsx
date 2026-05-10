@@ -28,6 +28,14 @@ export const CAMERA_CONFIG = {
       changeSpeed: 2,
     },
   },
+  favorite: {
+    target: {
+      position: [0.4, -0.14, -0.15],
+      target: [-0.02, -0.08, -0.74],
+      animationSpeed: 2,
+      changeSpeed: 2,
+    },
+  },
 } satisfies CameraConfigMap;
 
 export const INTERACTABLE_OBJECTS = {
@@ -40,6 +48,15 @@ export const INTERACTABLE_OBJECTS = {
 
 export const MODALS = {
   landing: {
+    width: "40%",
+    height: "100%",
+    inset: "right",
+    gap: 16,
+    rotation: -16,
+    perspective: 1700,
+    background: "transparent",
+  },
+  favorite: {
     width: "40%",
     height: "100%",
     inset: "right",

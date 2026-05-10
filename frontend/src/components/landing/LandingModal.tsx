@@ -25,6 +25,14 @@ const LandingModal = () => {
     | MediaType
     | "all";
 
+  const openFavorites = () => {
+    setSearchParams((prev) => {
+      prev.set("favorites", "true");
+      prev.delete("page");
+      return prev;
+    });
+  };
+
   const {
     data,
     isLoading,
@@ -78,8 +86,18 @@ const LandingModal = () => {
     <ModalWindow placement={MODALS.landing}>
       <div className="flex flex-col gap-4">
         <div className="w-full sticky top-0 z-50 flex flex-col justify-center gap-1">
-          {/* Search bar */}
-          <div className="flex gap-1 w-full">
+          <div className="flex gap-1 w-full h-full">
+            {/* Favorite Icon */}
+            <button
+              type="button"
+              className="bg-black/60 py-1 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10 flex items-center"
+              onClick={openFavorites}
+              aria-label="Open favorites"
+            >
+              <i className="fa-solid fa-bookmark text-xl"></i>
+            </button>
+
+            {/* Search bar */}
             <form className="flex gap-1 w-full" onSubmit={handleSearch}>
               <div className="relative w-full">
                 <input

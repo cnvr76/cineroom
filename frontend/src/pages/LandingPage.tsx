@@ -17,13 +17,36 @@ import ClickDetectionSystem from "../components/features/ClickDetectionSystem";
 import CameraAnimationSystem from "../components/features/CameraAnimationSystem";
 import { useSceneActions, useSceneAnimations } from "../contexts/SceneContext";
 import TrailerModal from "../components/shared/TrailerModal";
+import FavoriteModal from "../components/favorite/FavoriteModal";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const LandingUI = () => {
+  const [searchParams] = useSearchParams();
   const { isSelected } = useSceneActions();
-  const { isAnimating } = useSceneAnimations();
-  if (!isSelected("tv")) return <LandingModal />;
-  if (!isAnimating && isSelected("tv")) return <TrailerModal />;
-  return null;
+  const { isAnimating, isCameraReady, getMoveCameraToFn } =
+    useSceneAnimations();
+
+  const isFavoriteView = searchParams.get("favorites") === "true";
+
+  useEffect(() => {
+    if (!isCameraReady) return;
+    if (isFavoriteView) {
+      getMoveCameraToFn()(cc.favorite.target);
+    } else if (!isSelected("tv")) {
+      getMoveCameraToFn()(cc.landing.default);
+    }
+  }, [isFavoriteView, isCameraReady]);
+
+  if (isFavoriteView) {
+    // return !isAnimating ? <FavoriteModal /> : null;
+    return <FavoriteModal />;
+  }
+  if (isSelected("tv")) {
+    // return !isAnimating ? <TrailerModal /> : null;
+    return <TrailerModal />;
+  }
+  return <LandingModal />;
 };
 
 const LandingPage = () => {

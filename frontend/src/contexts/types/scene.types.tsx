@@ -53,4 +53,7 @@ export interface SceneAnimations {
 
   isAnimating: boolean;
   setIsAnimating: (value: boolean) => void;
+
+  isCameraReady: boolean;
+  setIsCameraReady: (value: boolean) => void;
 }

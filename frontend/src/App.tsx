@@ -52,7 +52,7 @@ const router = createBrowserRouter([
             element: null,
           },
           {
-            path: "favorite",
+            path: "admin",
             element: null,
           },
         ],

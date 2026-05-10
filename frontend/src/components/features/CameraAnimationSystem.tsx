@@ -21,8 +21,12 @@ const CameraAnimationSystem = ({
 
   const isAnimatingRef = useRef(false);
 
-  const { setMoveCameraToFn, setResetCameraFn, setIsAnimating } =
-    useSceneAnimations();
+  const {
+    setMoveCameraToFn,
+    setResetCameraFn,
+    setIsAnimating,
+    setIsCameraReady,
+  } = useSceneAnimations();
   const { deselectObject } = useSceneActions();
 
   useEffect(() => {
@@ -53,11 +57,14 @@ const CameraAnimationSystem = ({
   useEffect(() => {
     setMoveCameraToFn(animateToPosition);
     setResetCameraFn(animateToDefault);
+    setIsCameraReady(true);
+    return () => setIsCameraReady(false);
   }, [
     animateToDefault,
     animateToPosition,
     setMoveCameraToFn,
     setResetCameraFn,
+    setIsCameraReady,
   ]);
 
   useFrame((_, delta: number) => {

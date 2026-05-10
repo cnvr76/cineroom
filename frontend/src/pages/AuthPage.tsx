@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import SignupForm from "../components/auth/SignupForm";
 import LoginForm from "../components/auth/LoginForm";
 
@@ -6,6 +6,7 @@ type AuthType = "signup" | "login";
 
 const AuthPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const authType = (searchParams.get("type") || "login") as AuthType;
   const isSignup = authType === "signup";
 
@@ -21,6 +22,12 @@ const AuthPage = () => {
       <div className="w-full max-w-5xl mx-6 grid grid-cols-2 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
         {/* Left: form */}
         <div className="bg-black/20 p-12 flex flex-col gap-6 text-white">
+          <button
+            className="font-bold text-md cursor-pointer w-fit "
+            onClick={() => navigate("/")}
+          >
+            CINEROOM
+          </button>
           <div className="mt-12">
             <h1 className="text-4xl font-bold">
               {isSignup ? "Sign up" : "Login"}

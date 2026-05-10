@@ -10,7 +10,7 @@ export type CameraConfig = {
   changeSpeed?: number;
 };
 type CameraConfigObject = {
-  default: CameraConfig;
+  default?: CameraConfig;
   target?: CameraConfig;
 };
 
