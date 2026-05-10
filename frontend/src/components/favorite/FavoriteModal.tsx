@@ -24,6 +24,7 @@ const FavoriteModal = () => {
     selectMedia,
     selectObject,
     setHovered,
+    setHoveredMedia,
   } = useSceneActions();
   const { getMoveCameraToFn } = useSceneAnimations();
   const { data, currentPage, isLoading, isLastPage, fetchError, handlePage } =
@@ -77,7 +78,7 @@ const FavoriteModal = () => {
               <i className="fa-solid fa-arrow-left rotate-45"></i> Back
             </button>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 sticky top-0 z-100">
             <SearchBar
               onChange={setSearchState}
               searchFn={api.media.favorites.search}
@@ -110,6 +111,10 @@ const FavoriteModal = () => {
                 data={m}
                 key={m._id}
                 onClick={() => handleClick(m._id)}
+                onHover={{
+                  enter: () => setHoveredMedia(m._id),
+                  exit: () => setHoveredMedia(undefined),
+                }}
               />
             ))}
 

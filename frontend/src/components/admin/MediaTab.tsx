@@ -28,6 +28,12 @@ const MediaTab = () => {
     if (!confirm("Delete this media permanently?")) return;
     await deleteMedia(() => api.admin.media.delete(id));
     refetch();
+    if (searchState.isActive) {
+      setSearchState((prev) => ({
+        ...prev,
+        results: prev.results?.filter((m) => m._id !== id),
+      }));
+    }
   };
 
   return (

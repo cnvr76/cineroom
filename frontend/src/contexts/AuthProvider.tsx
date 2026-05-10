@@ -6,9 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Декодируем токен синхронно при инициализации стейта — без этого первый
-  // рендер выдаёт user=undefined и гард админки/профиля редиректит до того,
-  // как токен успеет распарситься в useEffect.
   const [user, setUser] = useState<IUser | undefined>(() => {
     const token = authService.getToken();
     if (!token) return undefined;

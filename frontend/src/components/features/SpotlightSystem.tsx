@@ -5,7 +5,6 @@ import { useSceneActions, useSceneState } from "../../contexts/SceneContext";
 import * as THREE from "three";
 import { CONSTANTS, type SceneObjectKey } from "../../config/sceneObjects";
 
-// --- Raycast throttle: 30Hz max, only when pointer actually moved ---
 const RAYCAST_INTERVAL_MS = 33;
 
 const SpotlightSystem = () => {
@@ -25,7 +24,6 @@ const SpotlightSystem = () => {
   } = useSceneActions();
   const tempColor = useMemo(() => new THREE.Color(), []);
 
-  // --- Refs for raycast / cursor throttling ---
   const pointerMovedRef = useRef<boolean>(true);
   const lastRaycastRef = useRef<number>(0);
   const cursorRef = useRef<string>("default");
@@ -52,7 +50,6 @@ const SpotlightSystem = () => {
       window.removeEventListener("pointermove", activateInteractibles);
   }, []);
 
-  // Mark that the pointer moved — used to skip raycast on idle frames
   useEffect(() => {
     const onPointerMove = () => {
       pointerMovedRef.current = true;
@@ -65,9 +62,6 @@ const SpotlightSystem = () => {
     if (!interactionsEnabled || !isInitialized) return;
     if (document.hidden) return;
 
-    // --- Hover detection: throttled + skipped while a selection is active ---
-    // Selection means camera is animating / locked on an object — there is
-    // nothing to hover then, so we save a full scene raycast every frame.
     const now = performance.now();
     const canRaycast =
       !isAnySelected() &&
@@ -104,7 +98,6 @@ const SpotlightSystem = () => {
       }
     }
 
-    // --- Cursor: only touch the DOM when the value actually changes ---
     const nextCursor =
       isAnyHovered() && !isAnySelected() ? "pointer" : "default";
     if (nextCursor !== cursorRef.current) {

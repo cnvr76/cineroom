@@ -26,6 +26,12 @@ const UsersTab = () => {
     if (!confirm("Delete this user permanently?")) return;
     await deleteUser(() => api.admin.users.delete(id));
     refetch();
+    if (searchState.isActive) {
+      setSearchState((prev) => ({
+        ...prev,
+        results: prev.results?.filter((u) => u.id !== id),
+      }));
+    }
   };
 
   return (
