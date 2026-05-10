@@ -4,6 +4,7 @@ import LandingPage from "./pages/LandingPage";
 import { useSceneActions, useSceneState } from "./contexts/SceneContext";
 import AuthPage from "./pages/AuthPage";
 import AuthProvider from "./contexts/AuthProvider";
+import ProfilePage from "./pages/ProfilePage";
 
 const DebugPanel = () => {
   const { currentSelected, currentHovered, currentHoveredMedia, currentMedia } =
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "me",
-            element: null,
+            element: <ProfilePage />,
           },
           {
             path: "admin",

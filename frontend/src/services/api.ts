@@ -1,7 +1,12 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import type { IMediaBrief, IMediaFull, MediaType } from "./types/media.types";
 import { authService } from "./authService";
-import type { IUser } from "./types/user.types";
+import type {
+  ChangeMeFormData,
+  ChangeUserFormData,
+  IUser,
+  IUserFull,
+} from "./types/user.types";
 import type { LoginFormData, SignupFormData } from "./types/auth.types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
@@ -73,5 +78,14 @@ export const api = {
       }),
     signup: (data: SignupFormData) =>
       request<IUser>("/auth/signup", { method: "POST", data }),
+  },
+
+  user: {
+    list: () => request<IUserFull[]>("/users"),
+    me: () => request<IUserFull>("/users/me"),
+    updateMe: (data: ChangeMeFormData) =>
+      request<IUserFull>("/users/me", { method: "PATCH", data }),
+    updateUser: (userId: string, data: ChangeUserFormData) =>
+      request<IUserFull>(`/users/${userId}`, { method: "PATCH", data }),
   },
 };

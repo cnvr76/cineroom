@@ -10,7 +10,9 @@ const AccountIcon = () => {
       <button
         className="relative bg-black/60 py-1.5 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10"
         onClick={
-          isAuthenticated ? () => navigate("/profile") : () => navigate("/auth")
+          isAuthenticated
+            ? () => navigate("/profile/me")
+            : () => navigate("/auth")
         }
       >
         {isAuthenticated ? (
@@ -32,7 +34,7 @@ const AccountIcon = () => {
       {isAuthenticated && (
         <button
           onClick={logout}
-          className="relative bg-black/60 py-1.5 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10"
+          className="text-red-400 relative bg-black/60 py-1.5 px-2.5 rounded-full cursor-pointer hover:scale-110 transition-all ease-in-out border border-white/10"
         >
           <i className="fa-solid fa-right-from-bracket"></i>
         </button>
