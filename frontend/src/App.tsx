@@ -6,6 +6,8 @@ import AuthPage from "./pages/AuthPage";
 import AuthProvider from "./contexts/AuthProvider";
 import ProfilePage from "./pages/ProfilePage";
 import AdminPage from "./pages/AdminPage";
+import PageNotFound from "./pages/PageNotFound";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const DebugPanel = () => {
   const { currentSelected, currentHovered, currentHoveredMedia, currentMedia } =
@@ -47,17 +49,24 @@ const router = createBrowserRouter([
         element: <AuthPage />,
       },
       {
-        path: "profile",
-        children: [
-          {
-            path: "me",
-            element: <ProfilePage />,
-          },
-        ],
+        path: "profile/me",
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "admin",
-        element: <AdminPage />,
+        element: (
+          <ProtectedRoute requireAdmin>
+            <AdminPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "*",
+        element: <PageNotFound />,
       },
     ],
   },

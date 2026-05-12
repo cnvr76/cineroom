@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../contexts/AuthContext";
 import Dashboard from "../components/admin/Dashboard";
 import TabButton from "../components/admin/TabButton";
 import UsersTab from "../components/admin/UsersTab";
@@ -10,13 +9,7 @@ type AdminTabs = "users" | "media";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const { isAdmin, isAuthenticated } = useAuthContext();
   const [tab, setTab] = useState<AdminTabs>("users");
-
-  useEffect(() => {
-    if (!isAuthenticated) navigate("/", { replace: true });
-    else if (!isAdmin) navigate("/profile/me", { replace: true });
-  }, [isAuthenticated, isAdmin, navigate]);
 
   return (
     <div
